@@ -1,30 +1,28 @@
 ## The Problem
 
-Every SaaS company has the same bottleneck: feature requests. Customers want more all the time. They provide great feedback and ideas, but it's hard to build fast enough to keep up. Some times, they'd ask for something that'd solve their problem, but it's not a priority for the company. This leads to a lot of frustration and dissatisfaction.
+Every SaaS company has the same bottleneck: feature requests. Customers want more all the time. They provide great feedback and ideas, but it's hard to keep up fast enough. Sometimes, they'd ask for something that'd solve their problem, but it's not a priority for the company. This leads to frustration and dissatisfaction.
 
-## Amplify 
+When I started my last company, the only thing I wanted was to hit Product-Market-Fit. Once we hit product-market fit, we were overwhelmed by feature requests. It was the most intense 2 years of my life, and still is.  
 
-When I started my last company, the only thing I wanted was to hit Product-Market-Fit. Once we hit product-market-fit, we were overwhelmed with feature requests. It was the most intense 2 years of my life, and still is.  
+Users never seem to run out of problems they want to solve urgently with our product. We just could not hire fast enough to build. Even after we 10x'ed our development throughput with AI development tools and doubled our engineering bandwidth, users just kept wanting more. Solving users' problems elegantly begets more problems users want to solve with your product. It's a great problem to have.
 
-Users never seem to run out of problems they want to solve urgently with our product. We just could not hire fast enough to build. Even after we 10x'ed our development throughput with AI development tools and doubled our engineering bandwidth, users just kept wanting more. Solving user's problems in an elegant way begets more problems the users want to solve with your product. It's a great problem to have.
-
-These were Fortune 500 company customers that were paying some serious money to solve multi-hundred million dollar problems and we just did not have the bandwidth to build. Interestingly, many of the requests were not that complicated.
+These were Fortune 500 company customers paying serious money to solve multi-hundred-million-dollar problems, and we just did not have the bandwidth to build. Interestingly, many of the requests were not that complicated.
 
 *Examples:*
-* Need a custom dashboard, but you can use the same charts you already have. We just want to organize them in a specific way for our executives..
+* Need a custom dashboard, but you can use the same charts you already have. We just want to organize them in a specific way for our executives.
 * We need data export formatted in a specific way for our accounting team.
 * We need a bulk action to archive 1000s of records at once.
 
 Many of these requests were not that complicated. They were just different arrangements of the same building blocks.
 
-We were so severely bottlenecked that even simple requests like above had to be backlogged for months or was at a risk of building a Frankenstein monster of a feature that would be difficult to maintain and scale.
+We were so severely bottlenecked that even simple requests like the above had to be backlogged for months or risk building a Frankenstein monster of a feature that would be difficult to maintain and scale.
 
 Meanwhile, the backend API can already do most of what they're asking for. The bottleneck isn't capability—it's UI.
 
 
 ## Solution
 
-I'm creating n.codes. It's an open source project that allows users to build the UI they need with just a prompt within your app. It's agentic UI. Like Lovable, Replit, etc, but tightly integrated into the app, with access to the app's backend APIs, and keeps a consistent style.
+I'm creating n.codes. It's an open-source project that lets users build the UI they need with just a prompt in their app. It's agentic UI. Like Lovable, Replit, etc, but tightly integrated into the app, with access to the app's backend APIs, and keeps a consistent style.
 
 
 ## How It Works
@@ -35,7 +33,7 @@ The LLM doesn't write arbitrary code.
 
 2. It reads through your backend APIs, docs, and schemas to create a *"capability map"* of your app. This includes entities, actions, queries, and constraints.
 
-3. Given user's prompt, it uses the capability map to build the UI that the user asks for, and creates a private component for that user in a sandboxed runtime.
+3. Given the user's prompt, it uses the capability map to build the UI that the user asks for, and creates a private component for that user in a sandboxed runtime.
 
 n.codes is like a forward-deployed engineer for the user. It's Cloud Code that lives in your app for the user.
 
@@ -51,7 +49,8 @@ n.codes is like a forward-deployed engineer for the user. It's Cloud Code that l
 * Not for pixel-perfect marketing pages
 * Not for bypassing business logic
 
-### Ownership Generated UIs can be:
-* private per user
-* shared with a team
-* promoted to “official” UI by admins
+### Ownership
+Generated UIs can be:
+* Private per user
+* Shared with a team
+* Promoted to “official” UI by admins
