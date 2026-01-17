@@ -38,7 +38,7 @@ The world seems to be moving this way already, and there isn't a good framework 
 
 **Most CRUD UIs are predictable.** 80% of any software is just a combination of tables, forms, filters, buttons, and charts.
 
-**API schemas already describe what's possible.** NewUI can create a 'capability map' from _whatever exists_(docs & code), then let users generate a UI/solution.
+**API schemas already describe what's possible.** n.codes can create a 'capability map' from _whatever exists_(docs & code), then let users generate a UI/solution.
 
 **We have sandboxing now.** iframes, WASM, secure runtimes. User-generated UI doesn't have to be a security nightmare.
 
