@@ -1,4 +1,4 @@
-# What If Users Could Build Their Own UI With Just a Prompt?
+# What If Users Could Build Their Own UI In Your App With Just a Prompt?
 
 *January 11, 2026 · 3 min read*
 Original post at https://note.lolodex.com/public/11/what-if-users-could
@@ -9,28 +9,28 @@ Here's a thought experiment I can't stop thinking about.
 
 Every SaaS company has the same bottleneck: feature requests.
 
-When I started my last company, the only thing I wanted was to hit Product-Market-Fit. Once we hit product-market-fit, we were overwhelmed with feature requests. It was the most intense 2 years of my life, and still is. Users never seem to run out of problems they want to solve urgently with our product. We just could not hire fast enough to build. Even after we 10x'ed our development throughput with AI development tools and doubled our engineering bandwidth, users just wanted more. Their expectation kept going up.
+When I started my last company, the only thing I wanted was to hit Product-Market-Fit. Once we hit product-market fit, we were overwhelmed by feature requests. It was the most intense 2 years of my life. Users never seem to run out of problems they want to solve urgently with our product. We just could not hire fast enough to build. Even after we 10x'ed our development throughput with AI development tools and doubled our engineering bandwidth, users just wanted more. Their expectation kept going up.
 
 Sometimes a Fortune 100 customer offers serious money for a feature only 10% of users need.
 
 - Customer wants a custom dashboard? Gets added to the backlog.
 - Needs a different view of their data? Wait 6 months.
-- Need an urgent data export in a specific way? Get an engineer to context switch for 20 minutes to write a script.
+- Need an urgent data export in a specific way? Have an engineer context-switch for 20 minutes to write a script.
 - Wants to combine two features in a new way? "We'll consider it for the roadmap."
 
 Meanwhile, the backend API can already do most of what they're asking for. The bottleneck isn't capability—it's UI.
 
 ## The Idea
 
-What if users could just... describe what they want?
+What if users could just describe what they want?
 
 > "Show me a table of all orders from last week, with a button to mark each as shipped."
 
-And the system builds it. Right there. Using your existing API.
+And the system builds it. Right there. Using your existing API. 
 
-It's agentic UI, where the interface itself becomes generative. Like Claude Artifacts, but tightly integrated into the app, with access to the app's frontend components and backend APIs.
+It's agentic UI. Like Lovable, Replit, etc, but tightly integrated into the app, with access to the app's backend APIs, and keeps a consistent style.
 
-The world seems to be already moving this way, and there isn't a good framework for this.
+The world seems to be moving this way already, and there isn't a good framework for it.
 
 ## Why This Might Actually Work Now
 
