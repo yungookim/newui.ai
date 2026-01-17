@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>n.codes - User-Generated UI for Your App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg-body: #050505;
+      --bg-card: #0f0f0f;
+      --bg-code: #111111;
+      --border-color: #262626;
+      --text-main: #ededed;
+      --text-muted: #a1a1aa;
+      --text-dim: #52525b;
+      --accent: #4ade80;
+      --accent-dim: rgba(74, 222, 128, 0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-body);
+      color: var(--text-main);
+      line-height: 1.7;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 120px 24px;
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      color: #fff;
+      margin-bottom: 24px;
+      line-height: 1.1;
+    }
+
+    .tagline {
+      font-size: 1.35rem;
+      color: var(--text-muted);
+      margin-bottom: 64px;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      line-height: 1.5;
+    }
+
+    h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
+      margin-top: 64px;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    h2::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border-color);
+    }
+
+    p {
+      margin-bottom: 20px;
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    .highlight {
+      color: #fff;
+      font-weight: 500;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--bg-code);
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+
+    .code-block {
+      background: var(--bg-code);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 24px;
+      margin: 32px 0;
+      overflow-x: auto;
+      font-size: 0.9rem;
+    }
+
+    .code-block code {
+      background: none;
+      padding: 0;
+      border: none;
+      color: var(--text-main);
+    }
+
+    .section-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 40px;
+      margin: 64px 0;
+    }
+
+    .section-box h2 {
+      margin-top: 0;
+    }
+
+    .diagram {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      margin: 32px 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+    }
+
+    .diagram-row {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+    }
+
+    .diagram-box {
+      border: 1px solid var(--border-color);
+      padding: 12px 20px;
+      text-align: center;
+      background: var(--bg-body);
+      border-radius: 6px;
+      min-width: 140px;
+    }
+
+    .diagram-box-title {
+      color: var(--text-main);
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .diagram-box-sub {
+      color: var(--text-dim);
+      font-size: 0.7rem;
+    }
+
+    .diagram-connector {
+      display: flex;
+      justify-content: center;
+      position: relative;
+      height: 32px;
+      width: 100%;
+    }
+
+    .diagram-connector-line {
+      width: 1px;
+      height: 100%;
+      background: var(--border-color);
+    }
+
+    .diagram-connector-merge {
+      position: relative;
+      height: 32px;
+      width: 200px;
+    }
+
+    .diagram-connector-merge::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 25%;
+      width: 1px;
+      height: 50%;
+      background: var(--border-color);
+    }
+
+    .diagram-connector-merge::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 25%;
+      width: 1px;
+      height: 50%;
+      background: var(--border-color);
+    }
+
+    .diagram-connector-merge-h {
+      position: absolute;
+      top: 50%;
+      left: 25%;
+      right: 25%;
+      height: 1px;
+      background: var(--border-color);
+    }
+
+    .diagram-connector-merge-v {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 1px;
+      height: 50%;
+      background: var(--border-color);
+    }
+
+    .diagram-arrow {
+      color: var(--border-color);
+      font-size: 0.6rem;
+      line-height: 1;
+      margin: -4px 0;
+    }
+
+    .diagram-prompt {
+      color: var(--accent);
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: var(--accent);
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0;
+      }
+    }
+
+    /* Example UI Mockup */
+    .example-wrapper {
+      margin: 40px 0;
+    }
+
+    .example-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 500;
+    }
+
+    .app-frame {
+      background: var(--bg-body);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    .app-titlebar {
+      background: var(--bg-card);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .app-titlebar-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #333;
+    }
+
+    .app-titlebar-dot:nth-child(1) {
+      background: #ff5f57;
+    }
+
+    .app-titlebar-dot:nth-child(2) {
+      background: #ffbd2e;
+    }
+
+    .app-titlebar-dot:nth-child(3) {
+      background: #28ca42;
+    }
+
+    .app-titlebar-title {
+      flex: 1;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      margin-right: 54px;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 500;
+    }
+
+    .app-content {
+      padding: 20px;
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .app-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .app-badge {
+      font-size: 0.7rem;
+      padding: 4px 10px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      border-radius: 99px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 500;
+    }
+
+    .app-table {
+      width: 100%;
+      font-size: 0.85rem;
+      border-collapse: collapse;
+    }
+
+    .app-table th {
+      text-align: left;
+      color: var(--text-dim);
+      font-weight: 500;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .app-table td {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-muted);
+    }
+
+    .app-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .app-table .amount {
+      color: var(--text-main);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .app-table .status-pending {
+      color: #fbbf24;
+      background: rgba(251, 191, 36, 0.1);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+    }
+
+    .app-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .app-btn {
+      font-size: 0.75rem;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      transition: opacity 0.2s;
+    }
+
+    .app-btn:hover {
+      opacity: 0.9;
+    }
+
+    .app-btn-approve {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .app-btn-reject {
+      background: var(--border-color);
+      color: var(--text-muted);
+    }
+
+    ul,
+    ol {
+      margin: 24px 0;
+      padding-left: 0;
+      list-style-position: inside;
+    }
+
+    li {
+      margin-bottom: 12px;
+      color: var(--text-muted);
+    }
+
+    .features {
+      display: grid;
+      gap: 32px;
+      margin: 48px 0;
+    }
+
+    .feature {
+      border-left: 2px solid var(--border-color);
+      padding-left: 24px;
+    }
+
+    .feature strong {
+      color: var(--text-main);
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+    }
+
+    blockquote {
+      border-left: 3px solid var(--accent);
+      padding-left: 24px;
+      margin: 40px 0;
+      color: var(--text-main);
+      font-style: italic;
+      font-size: 1.2rem;
+      line-height: 1.6;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border-color);
+      margin: 64px 0;
+    }
+
+    footer {
+      margin-top: 80px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    a:hover {
+      color: #86efac;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>n.codes</h1>
+    <p class="tagline">Let users generate their own solution within your app without waiting for your backlog to be
+      cleared. It's like having a forward-deployed engineer for every user. Users ask what they need, and they get it
+      right there, right now.
+
+    <h2>The Problem</h2>
+
+    <p>Every SaaS company has the same bottleneck: <span class="highlight">feature requests</span>. Customers want more
+      all the time. They provide great feedback and ideas, but it's hard to build fast enough to keep up.</p>
+
+    <p>Even after 10x'ing development throughput with AI tools and doubling engineering bandwidth, users just keep
+      wanting more. Solving problems elegantly begets more problems users want solved.</p>
+
+    <p>Many requests aren't complicated—just different arrangements of the same building blocks:</p>
+
+    <ul>
+      <li>A custom dashboard using existing charts, organized for executives</li>
+      <li>Data export formatted a specific way for accounting</li>
+      <li>Bulk actions to archive thousands of records at once</li>
+    </ul>
+
+    <p>The backend API can already do most of what they're asking for. <span class="highlight">The bottleneck isn't
+        capability—it's exposing the capabilities to the user.</span></p>
+
+    <h2>The Solution</h2>
+
+    <p>n.codes is an open source project that lets users build the UI they need with just a prompt—inside your app. It's
+      agentic UI, tightly integrated with your backend APIs, keeping a consistent style.</p>
+
+    <blockquote>It's like a forward-deployed engineer for every user or Claude Code that lives in your app. Users ask
+      what they need, and they get it right there, right now.</blockquote>
+    <h2>How It Works</h2>
+    <div class="section-box">
+
+
+      <div class="diagram">
+        <div class="diagram-row">
+          <div class="diagram-box">
+            <div class="diagram-box-title">Components</div>
+            <div class="diagram-box-sub">React, Vue, etc.</div>
+          </div>
+          <div class="diagram-box">
+            <div class="diagram-box-title">Backend API</div>
+            <div class="diagram-box-sub">REST, GraphQL, etc.</div>
+          </div>
+        </div>
+        <div class="diagram-connector-merge">
+          <div class="diagram-connector-merge-h"></div>
+          <div class="diagram-connector-merge-v"></div>
+        </div>
+        <div class="diagram-arrow">▼</div>
+        <div class="diagram-box">
+          <div class="diagram-box-title">Capability Map</div>
+          <div class="diagram-box-sub">entities · actions · queries</div>
+        </div>
+        <div class="diagram-connector">
+          <div class="diagram-connector-line"></div>
+        </div>
+        <div class="diagram-arrow">▼</div>
+        <div class="diagram-box">
+          <div class="diagram-box-title">User Prompt</div>
+          <div class="diagram-box-sub diagram-prompt">Review refunds over $500, require approval, then trigger
+            payout<span class="cursor"></span></div>
+        </div>
+        <div class="diagram-connector">
+          <div class="diagram-connector-line"></div>
+        </div>
+        <div class="diagram-arrow">▼</div>
+        <div class="diagram-box">
+          <div class="diagram-box-title">Generated UI</div>
+          <div class="diagram-box-sub">sandboxed · styled</div>
+
+          <div class="example-wrapper">
+            <div class="app-frame">
+              <div class="app-titlebar">
+                <div class="app-titlebar-dot"></div>
+                <div class="app-titlebar-dot"></div>
+                <div class="app-titlebar-dot"></div>
+                <div class="app-titlebar-title">your-app.com</div>
+              </div>
+              <div class="app-content">
+                <div class="app-header">
+                  <div class="app-title">Refunds Over $500 — Pending Approval</div>
+                  <div class="app-badge">Generated UI</div>
+                </div>
+                <table class="app-table">
+                  <thead>
+                    <tr>
+                      <th>Customer</th>
+                      <th>Amount</th>
+                      <th>Reason</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>sarah@acme.co</td>
+                      <td class="amount">$892.00</td>
+                      <td>Duplicate charge</td>
+                      <td class="status-pending">Pending</td>
+                      <td class="app-actions">
+                        <button class="app-btn app-btn-approve">Approve</button>
+                        <button class="app-btn app-btn-reject">Reject</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>mike@startup.io</td>
+                      <td class="amount">$1,240.00</td>
+                      <td>Service not rendered</td>
+                      <td class="status-pending">Pending</td>
+                      <td class="app-actions">
+                        <button class="app-btn app-btn-approve">Approve</button>
+                        <button class="app-btn app-btn-reject">Reject</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>jess@corp.com</td>
+                      <td class="amount">$567.50</td>
+                      <td>Product defect</td>
+                      <td class="status-pending">Pending</td>
+                      <td class="app-actions">
+                        <button class="app-btn app-btn-approve">Approve</button>
+                        <button class="app-btn app-btn-reject">Reject</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <ol>
+      <li><strong>Learn Components</strong> — Reads your frontend components to understand capabilities and styles.</li>
+      <li><strong>Build Capability Map</strong> — Reads the codebase, APIs, docs, and schemas to map entities, actions,
+        queries, and constraints.</li>
+      <li><strong>Generate UI</strong> — Given a user prompt, builds the UI using the capability map. Runs in a
+        sandboxed runtime.</li>
+    </ol>
+
+    <h2>Agent Rules</h2>
+
+    <ul>
+      <li><strong>Safety</strong> — No arbitrary code execution. Permission-aware (RBAC scoped). Full audit trail.</li>
+      <li><strong>Boundaries</strong> — For the 90%: CRUD, analytics, workflows. Not for marketing pages or bypassing
+        business logic.</li>
+      <li><strong>Ownership</strong> — Generated UIs can be private, shared with a team, or promoted to official by
+        admins.</li>
+    </ul>
+
+    <div class="divider"></div>
+
+    <p>It's for the 80% of apps that are just different arrangements of the same building blocks.</p>
+
+    <footer>
+      <a href="https://github.com/nicholasgriffintn/newui.ai">GitHub</a>
+    </footer>
+  </div>
+</body>
+
+</html>
