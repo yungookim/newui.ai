@@ -4,7 +4,7 @@ Every SaaS company has the same bottleneck: feature requests. Customers want mor
 
 When I started my last company, the only thing I wanted was to hit Product-Market-Fit. Once we hit product-market fit, we were overwhelmed by feature requests. It was the most intense 2 years of my life, and still is.  
 
-Users never seem to run out of problems they want to solve urgently with our product. We just could not hire fast enough to build. Even after we 10x'ed our development throughput with AI development tools and doubled our engineering bandwidth, users just kept wanting more. Solving users' problems elegantly begets more problems users want to solve with your product. It's a great problem to have.
+Users never run out of problems they want to solve with our product. We just could not hire fast enough to build. Even after we 10x'ed our development throughput with AI development tools and doubled our engineering bandwidth, users just kept wanting more. 
 
 These were Fortune 500 company customers paying serious money to solve multi-hundred-million-dollar problems, and we just did not have the bandwidth to build. Interestingly, many of the requests were not that complicated.
 
