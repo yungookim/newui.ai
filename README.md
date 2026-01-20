@@ -22,7 +22,7 @@ Meanwhile, the backend API can already do most of what they're asking for. The b
 
 ## Solution
 
-I'm creating n.codes. It's an open-source project that lets users build the UI they need with just a prompt in their app. It's agentic UI. Like Lovable, Replit, etc, but tightly integrated into the app, with access to the app's backend APIs, and keeps a consistent style.
+I'm creating n.codes. It's an open-source project that lets users build the feature they need with just a prompt in your app. It's agentic UI. Like Lovable, Replit, etc, but tightly integrated into your app, with access to the app's APIs/docs/whatever, and keeps a consistent style.
 
 
 ## How It Works
