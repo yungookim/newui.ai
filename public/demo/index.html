@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>n.codes Demo - Acme CRM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <!-- Fake SaaS App Shell -->
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <span class="logo-icon">A</span>
+        <span class="logo-text">Acme CRM</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          Dashboard
+        </a>
+        <a href="#" class="nav-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          Customers
+        </a>
+        <a href="#" class="nav-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+          </svg>
+          Invoices
+        </a>
+        <a href="#" class="nav-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          Reports
+        </a>
+        <a href="#" class="nav-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+            </path>
+          </svg>
+          Settings
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="main-header">
+        <h1>Dashboard</h1>
+        <div class="header-actions">
+          <span class="user-badge">Demo User</span>
+        </div>
+      </header>
+
+      <!-- Default Content (shown initially) -->
+      <div id="default-content" class="content-area">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Total Revenue</div>
+            <div class="stat-value">$124,500</div>
+            <div class="stat-change positive">+12.5%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Active Customers</div>
+            <div class="stat-value">1,284</div>
+            <div class="stat-change positive">+8.2%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Open Invoices</div>
+            <div class="stat-value">47</div>
+            <div class="stat-change negative">-3.1%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Overdue</div>
+            <div class="stat-value">12</div>
+            <div class="stat-change negative">+2</div>
+          </div>
+        </div>
+
+        <div class="placeholder-section">
+          <div class="placeholder-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+              <path d="M2 17l10 5 10-5"></path>
+              <path d="M2 12l10 5 10-5"></path>
+            </svg>
+          </div>
+          <h3>Need a custom view?</h3>
+          <p>Click the <span class="highlight-text">n.codes</span> button to generate any UI you need.</p>
+        </div>
+      </div>
+
+      <!-- Generated Content Container (hidden initially) -->
+      <div id="generated-content" class="content-area" style="display: none;">
+        <!-- Content will be injected here by app.js -->
+      </div>
+    </main>
+  </div>
+
+  <!-- n.codes Floating Trigger Button -->
+  <button id="ncodes-trigger" class="ncodes-trigger" title="Open n.codes">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+      <path d="M12 3L14.5 8.5L20 9.27L16 13.14L16.9 19L12 16.27L7.1 19L8 13.14L4 9.27L9.5 8.5L12 3Z" fill="currentColor"
+        stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+    </svg>
+    <span>Build with AI</span>
+  </button>
+
+  <!-- n.codes Panel (hidden initially) -->
+  <div id="ncodes-panel" class="ncodes-panel">
+    <div class="panel-header">
+      <div class="panel-title">
+        <span class="panel-logo">n</span>
+        <span>n.codes</span>
+      </div>
+      <button id="panel-close" class="panel-close">&times;</button>
+    </div>
+
+    <div class="panel-body">
+      <div class="panel-intro">
+        <p>Describe the UI you need and it will be generated instantly.</p>
+      </div>
+
+      <!-- Prompt Input -->
+      <div class="prompt-section">
+        <textarea id="prompt-input" class="prompt-input"
+          placeholder="e.g., Show me overdue invoices with a remind button..." rows="3"></textarea>
+        <button id="generate-btn" class="generate-btn">
+          <span class="btn-text">Generate</span>
+          <span class="btn-loading" style="display: none;">
+            <span class="loading-dot"></span>
+            <span class="loading-dot"></span>
+            <span class="loading-dot"></span>
+          </span>
+        </button>
+      </div>
+
+      <!-- Quick Prompts -->
+      <div class="quick-prompts">
+        <div class="quick-prompts-label">Try these examples:</div>
+        <button class="quick-prompt" data-prompt="Show overdue invoices over $500 with a button to send reminders">
+          Overdue invoices table
+        </button>
+        <button class="quick-prompt"
+          data-prompt="Create a customer health dashboard showing engagement scores and churn risk">
+          Customer health dashboard
+        </button>
+        <button class="quick-prompt" data-prompt="Bulk archive inactive users who haven't logged in for 90 days">
+          Bulk archive users
+        </button>
+      </div>
+
+      <!-- Generation Status -->
+      <div id="generation-status" class="generation-status" style="display: none;">
+        <div class="status-line">
+          <span class="status-icon spinning">&#9881;</span>
+          <span class="status-text">Analyzing request...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pre-built Generated UIs (templates, hidden) -->
+  <template id="template-invoices">
+    <div class="generated-ui">
+      <div class="generated-header">
+        <div class="generated-title">
+          <h2>Overdue Invoices Over $500</h2>
+          <span class="generated-badge">Personal view</span>
+        </div>
+        <button class="generated-action-btn secondary" id="close-generated">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          Close
+        </button>
+      </div>
+      <div class="generated-body">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Invoice #</th>
+              <th>Amount</th>
+              <th>Days Overdue</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="customer-cell">
+                  <span class="avatar">AC</span>
+                  <div>
+                    <div class="customer-name">Acme Corp</div>
+                    <div class="customer-email">billing@acme.co</div>
+                  </div>
+                </div>
+              </td>
+              <td class="mono">INV-2024-089</td>
+              <td class="amount">$2,450.00</td>
+              <td><span class="overdue-badge severe">45 days</span></td>
+              <td><button class="action-btn remind">Send Reminder</button></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="customer-cell">
+                  <span class="avatar">TI</span>
+                  <div>
+                    <div class="customer-name">TechStart Inc</div>
+                    <div class="customer-email">accounts@techstart.io</div>
+                  </div>
+                </div>
+              </td>
+              <td class="mono">INV-2024-076</td>
+              <td class="amount">$1,890.00</td>
+              <td><span class="overdue-badge moderate">28 days</span></td>
+              <td><button class="action-btn remind">Send Reminder</button></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="customer-cell">
+                  <span class="avatar">GS</span>
+                  <div>
+                    <div class="customer-name">Global Systems</div>
+                    <div class="customer-email">finance@globalsys.com</div>
+                  </div>
+                </div>
+              </td>
+              <td class="mono">INV-2024-092</td>
+              <td class="amount">$3,200.00</td>
+              <td><span class="overdue-badge severe">52 days</span></td>
+              <td><button class="action-btn remind">Send Reminder</button></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="customer-cell">
+                  <span class="avatar">NV</span>
+                  <div>
+                    <div class="customer-name">Nova Ventures</div>
+                    <div class="customer-email">ap@novaventures.co</div>
+                  </div>
+                </div>
+              </td>
+              <td class="mono">INV-2024-081</td>
+              <td class="amount">$875.00</td>
+              <td><span class="overdue-badge mild">14 days</span></td>
+              <td><button class="action-btn remind">Send Reminder</button></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="customer-cell">
+                  <span class="avatar">SP</span>
+                  <div>
+                    <div class="customer-name">Spark Partners</div>
+                    <div class="customer-email">billing@sparkpartners.io</div>
+                  </div>
+                </div>
+              </td>
+              <td class="mono">INV-2024-067</td>
+              <td class="amount">$4,100.00</td>
+              <td><span class="overdue-badge severe">61 days</span></td>
+              <td><button class="action-btn remind">Send Reminder</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="table-footer">
+          <span class="table-info">Showing 5 invoices totaling $12,515.00</span>
+          <button class="action-btn primary">Send All Reminders</button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="template-dashboard">
+    <div class="generated-ui">
+      <div class="generated-header">
+        <div class="generated-title">
+          <h2>Customer Health Dashboard</h2>
+          <span class="generated-badge">Personal view</span>
+        </div>
+        <button class="generated-action-btn secondary" id="close-generated">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          Close
+        </button>
+      </div>
+      <div class="generated-body">
+        <div class="health-stats">
+          <div class="health-stat healthy">
+            <div class="health-stat-value">847</div>
+            <div class="health-stat-label">Healthy</div>
+            <div class="health-bar">
+              <div class="health-bar-fill" style="width: 66%"></div>
+            </div>
+          </div>
+          <div class="health-stat at-risk">
+            <div class="health-stat-value">312</div>
+            <div class="health-stat-label">At Risk</div>
+            <div class="health-bar">
+              <div class="health-bar-fill" style="width: 24%"></div>
+            </div>
+          </div>
+          <div class="health-stat churning">
+            <div class="health-stat-value">125</div>
+            <div class="health-stat-label">Churning</div>
+            <div class="health-bar">
+              <div class="health-bar-fill" style="width: 10%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="dashboard-card">
+            <h3>Top At-Risk Customers</h3>
+            <div class="risk-list">
+              <div class="risk-item">
+                <div class="risk-customer">
+                  <span class="avatar small">MC</span>
+                  <span>MegaCorp Ltd</span>
+                </div>
+                <div class="risk-score high">23%</div>
+              </div>
+              <div class="risk-item">
+                <div class="risk-customer">
+                  <span class="avatar small">DF</span>
+                  <span>DataFlow Inc</span>
+                </div>
+                <div class="risk-score high">31%</div>
+              </div>
+              <div class="risk-item">
+                <div class="risk-customer">
+                  <span class="avatar small">QS</span>
+                  <span>QuickServe</span>
+                </div>
+                <div class="risk-score medium">45%</div>
+              </div>
+              <div class="risk-item">
+                <div class="risk-customer">
+                  <span class="avatar small">BT</span>
+                  <span>BlueTech</span>
+                </div>
+                <div class="risk-score medium">52%</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-card">
+            <h3>Engagement Trends</h3>
+            <div class="chart-placeholder">
+              <div class="mini-chart">
+                <div class="chart-bar" style="height: 40%"></div>
+                <div class="chart-bar" style="height: 55%"></div>
+                <div class="chart-bar" style="height: 45%"></div>
+                <div class="chart-bar" style="height: 70%"></div>
+                <div class="chart-bar" style="height: 65%"></div>
+                <div class="chart-bar" style="height: 80%"></div>
+                <div class="chart-bar" style="height: 75%"></div>
+              </div>
+              <div class="chart-labels">
+                <span>Mon</span>
+                <span>Tue</span>
+                <span>Wed</span>
+                <span>Thu</span>
+                <span>Fri</span>
+                <span>Sat</span>
+                <span>Sun</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-actions">
+          <button class="action-btn secondary">Export Report</button>
+          <button class="action-btn primary">Schedule Outreach</button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="template-archive">
+    <div class="generated-ui">
+      <div class="generated-header">
+        <div class="generated-title">
+          <h2>Bulk Archive Inactive Users</h2>
+          <span class="generated-badge">Personal view</span>
+        </div>
+        <button class="generated-action-btn secondary" id="close-generated">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          Close
+        </button>
+      </div>
+      <div class="generated-body">
+        <div class="archive-info">
+          <div class="archive-stat">
+            <span class="archive-stat-value">234</span>
+            <span class="archive-stat-label">users inactive for 90+ days</span>
+          </div>
+        </div>
+
+        <div class="selection-header">
+          <label class="checkbox-label">
+            <input type="checkbox" id="select-all" checked>
+            <span>Select All (234)</span>
+          </label>
+          <span class="selection-count">234 selected</span>
+        </div>
+
+        <table class="data-table selectable">
+          <thead>
+            <tr>
+              <th width="40"></th>
+              <th>User</th>
+              <th>Last Active</th>
+              <th>Account Type</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox" checked class="row-checkbox"></td>
+              <td>
+                <div class="customer-cell">
+                  <span class="avatar">JD</span>
+                  <div>
+                    <div class="customer-name">John Doe</div>
+                    <div class="customer-email">john.doe@example.com</div>
+                  </div>
+                </div>
+              </td>
+              <td class="muted">Oct 15, 2024</td>
+              <td><span class="type-badge">Free</span></td>
+              <td><span class="status-badge inactive">Inactive</span></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" checked class="row-checkbox"></td>
+              <td>
+                <div class="customer-cell">
+                  <span class="avatar">SJ</span>
+                  <div>
+                    <div class="customer-name">Sarah Johnson</div>
+                    <div class="customer-email">sarah.j@company.co</div>
+                  </div>
+                </div>
+              </td>
+              <td class="muted">Sep 28, 2024</td>
+              <td><span class="type-badge">Pro</span></td>
+              <td><span class="status-badge inactive">Inactive</span></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" checked class="row-checkbox"></td>
+              <td>
+                <div class="customer-cell">
+                  <span class="avatar">MK</span>
+                  <div>
+                    <div class="customer-name">Mike Kim</div>
+                    <div class="customer-email">m.kim@startup.io</div>
+                  </div>
+                </div>
+              </td>
+              <td class="muted">Sep 12, 2024</td>
+              <td><span class="type-badge">Free</span></td>
+              <td><span class="status-badge inactive">Inactive</span></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" checked class="row-checkbox"></td>
+              <td>
+                <div class="customer-cell">
+                  <span class="avatar">EW</span>
+                  <div>
+                    <div class="customer-name">Emma Wilson</div>
+                    <div class="customer-email">emma@agency.com</div>
+                  </div>
+                </div>
+              </td>
+              <td class="muted">Aug 30, 2024</td>
+              <td><span class="type-badge">Team</span></td>
+              <td><span class="status-badge inactive">Inactive</span></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" checked class="row-checkbox"></td>
+              <td>
+                <div class="customer-cell">
+                  <span class="avatar">RL</span>
+                  <div>
+                    <div class="customer-name">Robert Lee</div>
+                    <div class="customer-email">rlee@corp.net</div>
+                  </div>
+                </div>
+              </td>
+              <td class="muted">Aug 15, 2024</td>
+              <td><span class="type-badge">Free</span></td>
+              <td><span class="status-badge inactive">Inactive</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="table-footer">
+          <span class="table-info">Showing 5 of 234 inactive users</span>
+          <div class="archive-actions">
+            <button class="action-btn secondary">Cancel</button>
+            <button class="action-btn danger">Archive 234 Users</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
