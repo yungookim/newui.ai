@@ -6,6 +6,8 @@
 ![Last Commit](https://img.shields.io/github/last-commit/yungookim/n.codes)
 ![Top Language](https://img.shields.io/github/languages/top/yungookim/n.codes)
 
+If you like n.codes, please star the repo: https://github.com/yungookim/n.codes
+
 ## Demo
 
 Let users generate their own solutions within your app without waiting for your backlog to clear. It's like having a forward-deployed engineer for every user. Users ask for what they need, agents build it instantly.

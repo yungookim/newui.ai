@@ -617,7 +617,34 @@
       font-size: 1rem;
       border-radius: 10px;
       transition: all 0.2s ease;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
       margin-bottom: 32px;
+    }
+
+    .star-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: 1px solid rgba(74, 222, 128, 0.35);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.95rem;
+      background: rgba(74, 222, 128, 0.08);
+      transition: all 0.2s ease;
+    }
+
+    .star-cta:hover {
+      border-color: var(--accent);
+      background: rgba(74, 222, 128, 0.18);
+      transform: translateY(-2px);
     }
 
     .demo-cta:hover {
@@ -664,10 +691,15 @@
       instantly.
     </p>
 
-    <a href="/demo/" class="demo-cta">
-      Try it out
-      <span class="demo-cta-arrow">&rarr;</span>
-    </a>
+    <div class="cta-row">
+      <a href="/demo/" class="demo-cta">
+        Try it out
+        <span class="demo-cta-arrow">&rarr;</span>
+      </a>
+      <a href="https://github.com/yungookim/n.codes" class="star-cta" target="_blank" rel="noopener">
+        Star on GitHub
+      </a>
+    </div>
 
     <h2>The Problem</h2>
 
