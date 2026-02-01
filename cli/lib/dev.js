@@ -4,8 +4,8 @@ const { inferCapabilitiesFromFiles, applyChangedFiles, summarizeCapabilityMap } 
 const { loadCache, saveCache } = require('./cache');
 const { resolveCapabilityMapPath, writeCapabilityMap } = require('./sync');
 
-function buildIncrementalMap({ fileIndex, changedFiles, config }) {
-  const base = inferCapabilitiesFromFiles(fileIndex);
+function buildIncrementalMap({ fileIndex, changedFiles, config, readFile }) {
+  const base = inferCapabilitiesFromFiles(fileIndex, { readFile });
   const updated = applyChangedFiles(base, changedFiles);
   if (config.projectName) {
     updated.projectName = config.projectName;
@@ -22,7 +22,12 @@ function runDev({ cwd, fs, path, io, configPath, extensions, excludeDirs }) {
   const diff = diffFileIndex(previousIndex, index);
   const changedFiles = selectChangedFiles(diff);
 
-  const map = buildIncrementalMap({ fileIndex: index, changedFiles, config });
+  const map = buildIncrementalMap({
+    fileIndex: index,
+    changedFiles,
+    config,
+    readFile: (filePath) => fs.readFileSync(path.join(cwd, filePath), 'utf8'),
+  });
   const mapPath = resolveCapabilityMapPath({ cwd, path, config });
 
   writeCapabilityMap({ fs, mapPath, map });

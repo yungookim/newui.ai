@@ -31,3 +31,5 @@
 ## Security & Configuration Tips
 - This is a static site; avoid adding runtime secrets to the repo.
 - Prefer local testing with `live-server` instead of adding new build tooling unless necessary.
+- Capability map generation is LLM-based: always require a configured provider/model and a valid API key before generating or updating capability maps. Any heuristic-only output must be labeled as a prototype fallback.
+- Store API keys in `.env.local` (not `.env`) and keep it out of version control.

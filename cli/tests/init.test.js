@@ -20,17 +20,20 @@ test('normalizeAnswer falls back when empty', () => {
 
 test('runInit writes config file with provider', async () => {
   const cwd = createTempDir();
-  const io = createMemoryIO({ responses: ['openai', 'gpt-4o', 'Demo'] });
+  const io = createMemoryIO({ responses: ['openai', 'gpt-4o', 'Demo', 'test-key'] });
   const result = await runInit({ cwd, fs, path, io });
   assert.ok(fs.existsSync(result.path));
   const config = JSON.parse(fs.readFileSync(result.path, 'utf8'));
   assert.equal(config.provider, 'openai');
   assert.equal(config.projectName, 'Demo');
+  const envPath = path.join(cwd, '.env.local');
+  const envContent = fs.readFileSync(envPath, 'utf8');
+  assert.ok(envContent.includes('OPENAI_API_KEY=test-key'));
 });
 
 test('runInit stores null project name when empty', async () => {
   const cwd = createTempDir();
-  const io = createMemoryIO({ responses: ['openai', 'gpt-4o', ''] });
+  const io = createMemoryIO({ responses: ['openai', 'gpt-4o', '', 'test-key'] });
   const result = await runInit({ cwd, fs, path, io });
   const config = JSON.parse(fs.readFileSync(result.path, 'utf8'));
   assert.equal(config.projectName, null);

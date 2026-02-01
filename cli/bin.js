@@ -7,12 +7,27 @@ const { formatUsage } = require('./lib/usage');
 const { VERSION } = require('./lib/version');
 const { createNodeIO } = require('./lib/io');
 const { createDryRunFs } = require('./lib/fs-utils');
-const { runInit } = require('./lib/init');
+const { runInit, ensureApiKey } = require('./lib/init');
 const { runDev } = require('./lib/dev');
 const { runSync } = require('./lib/sync');
 const { runValidate } = require('./lib/validate');
+const { loadConfig } = require('./lib/config');
 
 async function dispatchCommand(command, { cwd, fs: activeFs, path, io, configPath }) {
+  if (command !== 'init' && ['dev', 'sync', 'validate'].includes(command)) {
+    let ranInit = false;
+    let { config, exists } = loadConfig({ cwd, fs: activeFs, path, configPath });
+    if (!exists) {
+      io.log('No config found. Running init first.');
+      const result = await runInit({ cwd, fs: activeFs, path, io, configPath });
+      config = result.config;
+      exists = true;
+      ranInit = true;
+    }
+    if (!ranInit && exists && config?.provider) {
+      await ensureApiKey({ cwd, fs: activeFs, path, io, provider: config.provider });
+    }
+  }
   if (command === 'init') {
     await runInit({ cwd, fs: activeFs, path, io, configPath });
     return 0;

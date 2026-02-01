@@ -17,8 +17,8 @@ function writeCapabilityMap({ fs, mapPath, map }) {
   return mapPath;
 }
 
-function buildCapabilityMap({ fileIndex, config }) {
-  const base = inferCapabilitiesFromFiles(fileIndex);
+function buildCapabilityMap({ fileIndex, config, readFile }) {
+  const base = inferCapabilitiesFromFiles(fileIndex, { readFile });
   if (config.projectName) {
     base.projectName = config.projectName;
   }
@@ -29,7 +29,11 @@ function runSync({ cwd, fs, path, io, configPath, extensions, excludeDirs }) {
   const { config } = loadConfig({ cwd, fs, path, configPath });
   const files = collectFiles({ cwd, fs, path, extensions, excludeDirs });
   const index = buildFileIndex(files, { cwd, fs, path });
-  const map = buildCapabilityMap({ fileIndex: index, config });
+  const map = buildCapabilityMap({
+    fileIndex: index,
+    config,
+    readFile: (filePath) => fs.readFileSync(path.join(cwd, filePath), 'utf8'),
+  });
   const mapPath = resolveCapabilityMapPath({ cwd, path, config });
 
   writeCapabilityMap({ fs, mapPath, map });

@@ -29,20 +29,21 @@ test('mergeCapabilityMap combines sections', () => {
   assert.ok(merged.entities.Order);
 });
 
-test('render/parse capability map using JSON YAML', () => {
+test('render/parse capability map using YAML', () => {
   const map = defaultCapabilityMap({ generatedAt: '2026-01-01T00:00:00Z' });
   const content = renderCapabilityMapYaml(map);
+  assert.ok(!content.trim().startsWith('{'));
   const parsed = parseCapabilityMapYaml(content);
   assert.equal(parsed.generatedAt, '2026-01-01T00:00:00Z');
 });
 
 test('parseCapabilityMapYaml throws on non-object', () => {
-  assert.throws(() => parseCapabilityMapYaml('null'), /Capability map must be a JSON object/);
+  assert.throws(() => parseCapabilityMapYaml('null'), /Capability map must be a YAML object/);
 });
 
 test('summarizeCapabilityMap counts entries', () => {
   const map = defaultCapabilityMap();
-  map.actions.ship = { path: 'api/ship.js' };
+  map.actions.ship = { endpoint: { method: 'POST', path: '/api/ship' }, description: 'Ships an order.' };
   const summary = summarizeCapabilityMap(map);
   assert.equal(summary.actions, 1);
 });
@@ -76,8 +77,8 @@ test('toCapabilityName returns empty for non-alphanumeric file name', () => {
 test('inferCapabilitiesFromFiles assigns categories by path', () => {
   const fileIndex = {
     'src/components/Table.tsx': { size: 10, mtimeMs: 1 },
-    'src/api/orders.js': { size: 10, mtimeMs: 1 },
-    'src/queries/list.ts': { size: 10, mtimeMs: 1 },
+    'src/api/orders/_get.js': { size: 10, mtimeMs: 1 },
+    'src/api/orders/_post.js': { size: 10, mtimeMs: 1 },
   };
   const map = inferCapabilitiesFromFiles(fileIndex);
   assert.equal(Object.keys(map.components).length, 1);
@@ -87,12 +88,25 @@ test('inferCapabilitiesFromFiles assigns categories by path', () => {
 
 test('inferCapabilitiesFromFiles handles routes and services', () => {
   const fileIndex = {
-    'src/routes/tickets.js': { size: 10, mtimeMs: 1 },
-    'src/services/search.ts': { size: 10, mtimeMs: 1 },
+    'src/routes/tickets/_get.js': { size: 10, mtimeMs: 1 },
+    'src/routes/tickets/_post.js': { size: 10, mtimeMs: 1 },
   };
   const map = inferCapabilitiesFromFiles(fileIndex);
   assert.equal(Object.keys(map.actions).length, 1);
   assert.equal(Object.keys(map.queries).length, 1);
+});
+
+test('inferCapabilitiesFromFiles builds REST endpoint metadata', () => {
+  const fileIndex = {
+    'src/api/orders/[id]/cancel.ts': { size: 10, mtimeMs: 1 },
+  };
+  const map = inferCapabilitiesFromFiles(fileIndex, {
+    readFile: () => "export async function POST() { return null; }",
+  });
+  const action = Object.values(map.actions)[0];
+  assert.equal(action.endpoint.method, 'POST');
+  assert.equal(action.endpoint.path, '/api/orders/:id/cancel');
+  assert.ok(action.description.split('.').filter(Boolean).length >= 2);
 });
 
 test('applyChangedFiles copies changed files list', () => {

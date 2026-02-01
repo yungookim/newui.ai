@@ -63,13 +63,19 @@ entities:
 
 actions:
   markShipped:
-    endpoint: POST /api/orders/{id}/ship
+    endpoint:
+      method: POST
+      path: /api/orders/{id}/ship
+    description: "Marks an order as shipped by ID and returns the updated order. Use this endpoint after confirming fulfillment details."
     params: [tracking_number]
     requires: ["orders:write"]
 
 queries:
   listOrders:
-    endpoint: GET /api/orders
+    endpoint:
+      method: GET
+      path: /api/orders
+    description: "Lists orders for display and reporting. Supports filters such as status or date range."
     filters: [status, customer_id, date_range]
     requires: ["orders:read"]
 ```
@@ -99,6 +105,8 @@ components:
 
 The CLI prototype is designed to generate, update, and validate the capability map locally. It is intentionally minimal so teams can experiment with workflows before wiring up production introspection.
 
+**LLM requirement:** Capability map generation is an LLM-based feature. Production tooling must enforce provider/model configuration and a valid API key before generating or updating the map. Any heuristic-only pass must be labeled as a prototype fallback.
+
 **Commands:**
 ```bash
 npx n.codes init       # Interactive setup wizard (select provider + model)
@@ -125,7 +133,7 @@ npx n.codes validate   # Validate capability map structure
 - Reads `n.codes.capabilities.yaml`
 - Ensures required sections exist (`entities`, `actions`, `queries`, `components`)
 
-**Prototype note:** The CLI writes JSON content to `n.codes.capabilities.yaml` (JSON is valid YAML 1.2), keeping parsing simple in this prototype.
+**Prototype note:** The CLI writes YAML content to `n.codes.capabilities.yaml` using a small, deterministic serializer.
 
 ## DSL Format
 
