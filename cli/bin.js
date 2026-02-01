@@ -13,7 +13,7 @@ const { runSync } = require('./lib/sync');
 const { runValidate } = require('./lib/validate');
 const { loadConfig } = require('./lib/config');
 
-async function dispatchCommand(command, { cwd, fs: activeFs, path, io, configPath }) {
+async function dispatchCommand(command, { cwd, fs: activeFs, path, io, configPath, force = false }) {
   if (command !== 'init' && ['dev', 'sync', 'validate'].includes(command)) {
     let ranInit = false;
     let { config, exists } = loadConfig({ cwd, fs: activeFs, path, configPath });
@@ -37,7 +37,7 @@ async function dispatchCommand(command, { cwd, fs: activeFs, path, io, configPat
     return 0;
   }
   if (command === 'sync') {
-    runSync({ cwd, fs: activeFs, path, io, configPath });
+    runSync({ cwd, fs: activeFs, path, io, configPath, force });
     return 0;
   }
   if (command === 'validate') {
@@ -77,6 +77,7 @@ async function main(argv, { cwd = process.cwd(), io = createNodeIO(), configPath
       path,
       io,
       configPath: parsed.flags.configPath || configPath,
+      force: parsed.flags.force,
     });
   } catch (error) {
     io.error(error.message || 'Command failed.');

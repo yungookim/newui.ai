@@ -125,7 +125,7 @@ async function analyzeRoutesWithLLM({
   return taskResults;
 }
 
-function runSync({ cwd, fs, path, io, configPath, extensions, excludeDirs }) {
+function runSync({ cwd, fs, path, io, configPath, extensions, excludeDirs, force = false }) {
   const { config } = loadConfig({ cwd, fs, path, configPath });
   const files = collectFiles({ cwd, fs, path, extensions, excludeDirs });
   const index = buildFileIndex(files, { cwd, fs, path });
