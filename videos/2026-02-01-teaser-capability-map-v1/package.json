@@ -1,0 +1,29 @@
+{
+  "name": "teaser-capability-map",
+  "version": "1.0.0",
+  "description": "Social media teaser video for n.codes capability maps",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render CapabilityMapTeaser out/teaser.mp4",
+    "render:vertical": "remotion render CapabilityMapTeaser out/teaser-vertical.mp4",
+    "render:gif": "remotion render CapabilityMapTeaser out/teaser.gif --image-format=png",
+    "render:slides": "npm run render:slide1 && npm run render:slide2 && npm run render:slide3 && npm run render:slide4 && npm run render:slide5 && npm run render:slide6",
+    "render:slide1": "remotion still Slide1-Intro out/slides/slide1-intro.png",
+    "render:slide2": "remotion still Slide2-Capabilities out/slides/slide2-capabilities.png",
+    "render:slide3": "remotion still Slide3-Flow out/slides/slide3-flow.png",
+    "render:slide4": "remotion still Slide4-Output out/slides/slide4-output.png",
+    "render:slide5": "remotion still Slide5-Value out/slides/slide5-value.png",
+    "render:slide6": "remotion still Slide6-CTA out/slides/slide6-cta.png"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.288",
+    "@remotion/google-fonts": "4.0.288",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.288"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.18",
+    "typescript": "5.7.3"
+  }
+}
