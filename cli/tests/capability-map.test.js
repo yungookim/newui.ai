@@ -11,6 +11,7 @@ const {
   toCapabilityName,
   inferCapabilitiesFromFiles,
   applyChangedFiles,
+  enrichCapabilityWithAnalysis,
 } = require('../lib/capability-map');
 
 test('defaultCapabilityMap includes required sections', () => {
@@ -113,4 +114,90 @@ test('applyChangedFiles copies changed files list', () => {
   const map = defaultCapabilityMap();
   const updated = applyChangedFiles(map, ['a.js', 'b.js']);
   assert.deepEqual(updated.meta.changedFiles, ['a.js', 'b.js']);
+});
+
+test('enrichCapabilityWithAnalysis adds LLM fields to action', () => {
+  const action = {
+    endpoint: { method: 'POST', path: '/api/bookings' },
+    description: 'Original heuristic description'
+  };
+
+  const analysisResult = {
+    description: 'LLM generated description',
+    entities: [{ name: 'Booking', fields: ['id'], source: 'prisma' }],
+    analysisSource: 'llm'
+  };
+
+  const enriched = enrichCapabilityWithAnalysis(action, analysisResult);
+
+  assert.equal(enriched.description, 'LLM generated description');
+  assert.deepEqual(enriched.entities, ['Booking']);
+  assert.equal(enriched.analysisSource, 'llm');
+});
+
+test('enrichCapabilityWithAnalysis preserves heuristic source', () => {
+  const action = {
+    endpoint: { method: 'POST', path: '/api/bookings' },
+    description: 'Heuristic description'
+  };
+
+  const analysisResult = {
+    description: 'Heuristic description',
+    entities: [],
+    analysisSource: 'heuristic'
+  };
+
+  const enriched = enrichCapabilityWithAnalysis(action, analysisResult);
+
+  assert.equal(enriched.analysisSource, 'heuristic');
+});
+
+test('enrichCapabilityWithAnalysis preserves original description if no LLM description', () => {
+  const action = {
+    endpoint: { method: 'GET', path: '/api/test' },
+    description: 'Original description'
+  };
+
+  const analysisResult = {
+    description: null,
+    entities: [],
+    analysisSource: 'heuristic'
+  };
+
+  const enriched = enrichCapabilityWithAnalysis(action, analysisResult);
+
+  assert.equal(enriched.description, 'Original description');
+});
+
+test('renderCapabilityMapYaml includes entities section with fields', () => {
+  const map = {
+    version: 1,
+    generatedAt: '2026-02-01T00:00:00Z',
+    projectName: 'test',
+    entities: {
+      Booking: {
+        fields: ['id', 'userId'],
+        sources: ['prisma'],
+        referencedBy: ['postBookings']
+      }
+    },
+    actions: {
+      postBookings: {
+        endpoint: { method: 'POST', path: '/api/bookings' },
+        description: 'Creates a booking',
+        entities: ['Booking'],
+        analysisSource: 'llm'
+      }
+    },
+    queries: {},
+    components: {},
+    meta: { filesAnalyzed: 1 }
+  };
+
+  const yaml = renderCapabilityMapYaml(map);
+
+  assert.ok(yaml.includes('entities:'));
+  assert.ok(yaml.includes('Booking:'));
+  assert.ok(yaml.includes('fields:'));
+  assert.ok(yaml.includes('analysisSource: "llm"'));
 });

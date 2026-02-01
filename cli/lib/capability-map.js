@@ -715,6 +715,15 @@ function applyChangedFiles(map, changedFiles) {
   });
 }
 
+function enrichCapabilityWithAnalysis(capability, analysisResult) {
+  return {
+    ...capability,
+    description: analysisResult.description || capability.description,
+    entities: (analysisResult.entities || []).map((e) => e.name),
+    analysisSource: analysisResult.analysisSource || 'heuristic'
+  };
+}
+
 module.exports = {
   defaultCapabilityMap,
   mergeCapabilityMap,
@@ -725,4 +734,5 @@ module.exports = {
   toCapabilityName,
   inferCapabilitiesFromFiles,
   applyChangedFiles,
+  enrichCapabilityWithAnalysis,
 };
