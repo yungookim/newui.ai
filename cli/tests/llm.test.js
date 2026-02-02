@@ -91,7 +91,7 @@ test('analyzeWithLLM returns fallback when no API key', async () => {
     imports: [],
     typeImports: []
   };
-  const config = { provider: 'openai', model: 'gpt-5-mini' };
+  const config = { provider: 'openai', model: 'gpt-5-mini', allowHeuristicFallback: true };
   const heuristicDescription = 'Fallback description';
 
   // With no API key set, should return fallback
@@ -110,6 +110,33 @@ test('analyzeWithLLM returns fallback when no API key', async () => {
 
   assert.equal(result.fallback, true);
   assert.equal(result.description, heuristicDescription);
+});
+
+test('analyzeWithLLM throws when no API key and fallback disabled', async () => {
+  const routeContext = {
+    routeFile: 'pages/api/test.ts',
+    routeContent: 'export function GET() { return Response.json({}); }',
+    imports: [],
+    typeImports: []
+  };
+  const config = { provider: 'openai', model: 'gpt-5-mini', allowHeuristicFallback: false };
+  const heuristicDescription = 'Fallback description';
+
+  const originalKey = process.env.OPENAI_API_KEY;
+  delete process.env.OPENAI_API_KEY;
+
+  await assert.rejects(
+    analyzeWithLLM({
+      routeContext,
+      method: 'GET',
+      path: '/api/test',
+      config,
+      heuristicDescription
+    }),
+    { message: /Missing OPENAI_API_KEY/ }
+  );
+
+  process.env.OPENAI_API_KEY = originalKey;
 });
 
 test('buildAnalysisPrompt includes route info and code', () => {

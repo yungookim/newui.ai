@@ -51,6 +51,40 @@ The LLM doesn't write arbitrary code.
 - Store local API keys in `.env.local` (not `.env`) so they stay out of version control.
 - Capability map generation is LLM-based and requires a configured provider/model plus a valid API key.
 
+### Capability map example
+When you add or change a route, `n.codes sync` turns it into structured capabilities.
+
+Input route:
+```ts
+// pages/api/bookings/[id].ts
+export async function GET(req) {
+  // fetch booking by id
+}
+```
+
+Output capability map snippet:
+```yaml
+queries:
+  getBooking:
+    endpoint:
+      method: "GET"
+      path: "/api/bookings/:id"
+    description: "Retrieves a booking by ID with its related details."
+    entities:
+      - "Booking"
+    analysisSource: "llm"
+
+entities:
+  Booking:
+    fields:
+      - id
+      - status
+    sources:
+      - "prisma"
+    referencedBy:
+      - getBooking
+```
+
 1. It reads through your frontend components to understand the capabilities of your app and styles. It then uses that knowledge to build the UI that the user asks for. It keeps a consistent style.
 
 2. It reads through your backend APIs, docs, and schemas to create a *"capability map"* of your app. This includes entities, actions, queries, and constraints.

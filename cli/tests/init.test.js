@@ -9,6 +9,7 @@ const {
   formatModelChoices,
   parseModelChoice,
   normalizeAnswer,
+  parseYesNo,
   runInit,
 } = require('../lib/init');
 const { createMemoryIO } = require('../lib/io');
@@ -55,16 +56,23 @@ test('normalizeAnswer falls back when empty', () => {
   assert.equal(normalizeAnswer('  value ', 'fallback'), 'value');
 });
 
+test('parseYesNo handles inputs', () => {
+  assert.equal(parseYesNo('y', false), true);
+  assert.equal(parseYesNo('no', true), false);
+  assert.equal(parseYesNo('', false), false);
+});
+
 test('runInit writes config file with provider and model', async () => {
   const cwd = createTempDir();
-  // Order: provider, model choice (number), project name, api key
-  const io = createMemoryIO({ responses: ['openai', '1', 'Demo', 'test-key'] });
+  // Order: provider, model choice (number), fallback, project name, api key
+  const io = createMemoryIO({ responses: ['openai', '1', 'n', 'Demo', 'test-key'] });
   const result = await runInit({ cwd, fs, path, io });
   assert.ok(fs.existsSync(result.path));
   const config = JSON.parse(fs.readFileSync(result.path, 'utf8'));
   assert.equal(config.provider, 'openai');
   assert.equal(config.model, 'gpt-5-mini');
   assert.equal(config.projectName, 'Demo');
+  assert.equal(config.allowHeuristicFallback, false);
   const envPath = path.join(cwd, '.env.local');
   const envContent = fs.readFileSync(envPath, 'utf8');
   assert.ok(envContent.includes('OPENAI_API_KEY=test-key'));
@@ -72,10 +80,11 @@ test('runInit writes config file with provider and model', async () => {
 
 test('runInit stores null project name when empty', async () => {
   const cwd = createTempDir();
-  const io = createMemoryIO({ responses: ['claude', '2', '', 'test-key'] });
+  const io = createMemoryIO({ responses: ['claude', '2', '', '', 'test-key'] });
   const result = await runInit({ cwd, fs, path, io });
   const config = JSON.parse(fs.readFileSync(result.path, 'utf8'));
   assert.equal(config.provider, 'claude');
   assert.equal(config.model, 'claude-opus-4-5');
   assert.equal(config.projectName, null);
+  assert.equal(config.allowHeuristicFallback, false);
 });

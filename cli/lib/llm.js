@@ -70,15 +70,19 @@ async function analyzeWithLLM({
   config,
   heuristicDescription
 }) {
+  const allowHeuristicFallback = config?.allowHeuristicFallback === true;
   const modelConfig = getModelConfig(config);
   const apiKey = process.env[modelConfig.envVar];
 
   if (!apiKey) {
-    return {
-      fallback: true,
-      description: heuristicDescription,
-      entities: []
-    };
+    if (allowHeuristicFallback) {
+      return {
+        fallback: true,
+        description: heuristicDescription,
+        entities: []
+      };
+    }
+    throw new Error(`Missing ${modelConfig.envVar}. Enable heuristic fallback during init to proceed without an API key.`);
   }
 
   try {
@@ -98,11 +102,15 @@ async function analyzeWithLLM({
     const prompt = buildAnalysisPrompt({ routeContext, method, path });
 
     const result = await withRetry(async () => {
-      const { text } = await generateText({
-        model,
-        prompt,
-        maxTokens: 1500
-      });
+      const options = { model, prompt };
+      if (config.provider === 'openai') {
+        options.maxCompletionTokens = 1500;
+        options.temperature = 1;
+      } else {
+        options.maxTokens = 1500;
+        options.temperature = 1;
+      }
+      const { text } = await generateText(options);
       return text;
     }, { maxAttempts: 3, baseDelay: 1000 });
 
@@ -113,12 +121,15 @@ async function analyzeWithLLM({
       entities: parsed.entities || []
     };
   } catch (error) {
-    return {
-      fallback: true,
-      description: heuristicDescription,
-      entities: [],
-      error: error.message
-    };
+    if (allowHeuristicFallback) {
+      return {
+        fallback: true,
+        description: heuristicDescription,
+        entities: [],
+        error: error.message
+      };
+    }
+    throw error;
   }
 }
 
@@ -148,7 +159,12 @@ ${routeContext.routeContent}
 
   prompt += `
 ## Task
-Analyze this route and respond in JSON only (no markdown code blocks):
+Analyze this route and respond in JSON only (no markdown code blocks).
+Only describe the handler for the method specified above. If other HTTP methods are present in the file, ignore them and do not mention them.
+
+Example:
+Input: Method=POST, File defines GET and POST handlers
+Output description: "Handles POST requests to create a new record, validating input and returning the created resource."
 
 {
   "description": "A 2-3 sentence description of what this endpoint does, its purpose, and key behavior",

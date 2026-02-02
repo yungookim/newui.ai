@@ -11,9 +11,10 @@ const { runInit, ensureApiKey } = require('./lib/init');
 const { runDev } = require('./lib/dev');
 const { runSync } = require('./lib/sync');
 const { runValidate } = require('./lib/validate');
+const { runReset } = require('./lib/reset');
 const { loadConfig } = require('./lib/config');
 
-async function dispatchCommand(command, { cwd, fs: activeFs, path, io, configPath, force = false }) {
+async function dispatchCommand(command, { cwd, fs: activeFs, path, io, configPath, force = false, sample = null, all = false }) {
   if (command !== 'init' && ['dev', 'sync', 'validate'].includes(command)) {
     let ranInit = false;
     let { config, exists } = loadConfig({ cwd, fs: activeFs, path, configPath });
@@ -33,16 +34,20 @@ async function dispatchCommand(command, { cwd, fs: activeFs, path, io, configPat
     return 0;
   }
   if (command === 'dev') {
-    runDev({ cwd, fs: activeFs, path, io, configPath });
+    await runDev({ cwd, fs: activeFs, path, io, configPath, force });
     return 0;
   }
   if (command === 'sync') {
-    runSync({ cwd, fs: activeFs, path, io, configPath, force });
+    await runSync({ cwd, fs: activeFs, path, io, configPath, force, sample });
     return 0;
   }
   if (command === 'validate') {
     const { result } = runValidate({ cwd, fs: activeFs, path, io, configPath });
     return result.valid ? 0 : 1;
+  }
+  if (command === 'reset') {
+    runReset({ cwd, fs: activeFs, path, io, configPath, all });
+    return 0;
   }
   io.error(`Unknown command: ${command}`);
   io.log(formatUsage());
@@ -78,6 +83,8 @@ async function main(argv, { cwd = process.cwd(), io = createNodeIO(), configPath
       io,
       configPath: parsed.flags.configPath || configPath,
       force: parsed.flags.force,
+      sample: parsed.flags.sample,
+      all: parsed.flags.all,
     });
   } catch (error) {
     io.error(error.message || 'Command failed.');

@@ -16,7 +16,7 @@ test('dispatchCommand returns error for unknown command', async () => {
 
 test('dispatchCommand runs init', async () => {
   const cwd = createTempDir();
-  const io = createMemoryIO({ responses: ['openai', 'gpt-4o', 'Demo', 'test-key'] });
+  const io = createMemoryIO({ responses: ['openai', 'gpt-4o', 'n', 'Demo', 'test-key'] });
   const code = await dispatchCommand('init', { cwd, fs, path, io, configPath: null });
   assert.equal(code, 0);
   assert.ok(fs.existsSync(path.join(cwd, 'n.codes.config.json')));
@@ -25,7 +25,7 @@ test('dispatchCommand runs init', async () => {
 test('dispatchCommand runs dev', async () => {
   const cwd = createTempDir();
   writeFile(cwd, 'src/components/Card.tsx', 'export const Card = () => null;');
-  const io = createMemoryIO({ responses: ['openai', 'gpt-4o', 'Demo', 'test-key'] });
+  const io = createMemoryIO({ responses: ['openai', 'gpt-4o', 'n', 'Demo', 'test-key'] });
   const code = await dispatchCommand('dev', { cwd, fs, path, io, configPath: null });
   assert.equal(code, 0);
 });
@@ -35,7 +35,7 @@ test('dispatchCommand runs validate', async () => {
   const mapPath = path.join(cwd, 'n.codes.capabilities.yaml');
   const map = defaultCapabilityMap({ generatedAt: '2026-01-01T00:00:00Z' });
   fs.writeFileSync(mapPath, renderCapabilityMapYaml(map), 'utf8');
-  const io = createMemoryIO({ responses: ['openai', 'gpt-4o', 'Demo', 'test-key'] });
+  const io = createMemoryIO({ responses: ['openai', 'gpt-4o', 'n', 'Demo', 'test-key'] });
   const code = await dispatchCommand('validate', { cwd, fs, path, io, configPath: null });
   assert.equal(code, 0);
 });
@@ -46,9 +46,23 @@ test('dispatchCommand returns error when validate fails', async () => {
   const map = defaultCapabilityMap({ generatedAt: null });
   delete map.version;
   fs.writeFileSync(mapPath, renderCapabilityMapYaml(map), 'utf8');
-  const io = createMemoryIO({ responses: ['openai', 'gpt-4o', 'Demo', 'test-key'] });
+  const io = createMemoryIO({ responses: ['openai', 'gpt-4o', 'n', 'Demo', 'test-key'] });
   const code = await dispatchCommand('validate', { cwd, fs, path, io, configPath: null });
   assert.equal(code, 1);
+});
+
+test('dispatchCommand runs reset', async () => {
+  const cwd = createTempDir();
+  const configPath = path.join(cwd, 'n.codes.config.json');
+  fs.writeFileSync(configPath, JSON.stringify({ capabilityMapPath: 'n.codes.capabilities.yaml' }), 'utf8');
+  fs.writeFileSync(path.join(cwd, 'n.codes.capabilities.yaml'), 'version: 1', 'utf8');
+  fs.writeFileSync(path.join(cwd, '.n.codes.cache.json'), '{}', 'utf8');
+  const io = createMemoryIO();
+  const code = await dispatchCommand('reset', { cwd, fs, path, io, configPath: null });
+  assert.equal(code, 0);
+  assert.equal(fs.existsSync(configPath), false);
+  assert.equal(fs.existsSync(path.join(cwd, 'n.codes.capabilities.yaml')), false);
+  assert.equal(fs.existsSync(path.join(cwd, '.n.codes.cache.json')), false);
 });
 
 test('main shows version', async () => {
@@ -82,7 +96,7 @@ test('main reports unknown options', async () => {
 test('main runs sync in dry-run mode', async () => {
   const cwd = createTempDir();
   writeFile(cwd, 'src/components/Widget.tsx', 'export const Widget = () => null;');
-  const io = createMemoryIO({ responses: ['openai', 'gpt-4o', 'Demo', 'test-key'] });
+  const io = createMemoryIO({ responses: ['openai', 'gpt-4o', 'n', 'Demo', 'test-key'] });
   const code = await main(['sync', '--dry-run'], { cwd, io });
   assert.equal(code, 0);
   assert.ok(io.getLogs().some((line) => line.includes('dry-run')));
