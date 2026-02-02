@@ -1,0 +1,28 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#27272a" stroke-width="1" />
+    </pattern>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(980 120) rotate(90) scale(280)">
+      <stop offset="0" stop-color="#4ade80" stop-opacity="0.6" />
+      <stop offset="1" stop-color="#4ade80" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="#0a0a0a" />
+  <rect width="1200" height="630" fill="url(#grid)" opacity="0.25" />
+  <circle cx="980" cy="120" r="280" fill="url(#glow)" />
+
+  <text x="100" y="170" fill="#ffffff" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="64" font-weight="700" letter-spacing="-1">n.codes</text>
+  <text x="100" y="220" fill="#4ade80" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="18" font-weight="600" letter-spacing="6">CHANGELOG</text>
+
+  <text x="100" y="310" fill="#ffffff" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="56" font-weight="700" letter-spacing="-0.5">
+    <tspan x="100" dy="0">Introducing</tspan>
+    <tspan x="100" dy="64">Capability Map</tspan>
+  </text>
+
+  <text x="100" y="430" fill="#a1a1aa" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="24" font-weight="400" letter-spacing="-0.2">
+    <tspan x="100" dy="0">The guardrails layer for n.codes</tspan>
+    <tspan x="100" dy="36">APIs, schemas, components, and constraints</tspan>
+  </text>
+</svg>

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>n.codes - Changelog</title>
+  <meta name="description" content="n.codes changelog and product updates.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://n.codes/changelog.html">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://n.codes/changelog.html">
+  <meta property="og:title" content="n.codes - Changelog">
+  <meta property="og:description" content="n.codes changelog and product updates.">
+  <meta property="og:site_name" content="n.codes">
+  <meta property="og:image" content="https://n.codes/og-changelog.svg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://n.codes/changelog.html">
+  <meta name="twitter:title" content="n.codes - Changelog">
+  <meta name="twitter:description" content="n.codes changelog and product updates.">
+  <meta name="twitter:image" content="https://n.codes/og-changelog.svg">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="color-scheme" content="dark">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg-body: #0a0a0a;
+      --bg-panel: #121212;
+      --bg-card: #1a1a1a;
+      --border-color: #27272a;
+      --text-main: #ffffff;
+      --text-muted: #a1a1aa;
+      --text-dim: #6b7280;
+      --accent: #4ade80;
+      --accent-glow: rgba(74, 222, 128, 0.3);
+      --accent-soft: rgba(74, 222, 128, 0.12);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      background: var(--bg-body);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text-main);
+      line-height: 1.7;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .page {
+      position: relative;
+      min-height: 100vh;
+      isolation: isolate;
+    }
+
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
+      background-size: 60px 60px;
+      opacity: 0.25;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .glow {
+      position: absolute;
+      width: 520px;
+      height: 520px;
+      background: var(--accent);
+      border-radius: 50%;
+      filter: blur(180px);
+      opacity: 0.18;
+      top: -120px;
+      right: -120px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 96px 24px 120px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 72px;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .brand-name {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-tag {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      color: var(--accent);
+    }
+
+    .page-title {
+      font-size: 48px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      text-align: right;
+    }
+
+    .page-subtitle {
+      color: var(--text-muted);
+      font-size: 18px;
+      text-align: right;
+      margin-top: 8px;
+    }
+
+    .timeline {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 56px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 16px;
+      top: 12px;
+      bottom: 12px;
+      width: 1px;
+      background: var(--border-color);
+    }
+
+    .entry {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 24px;
+      position: relative;
+    }
+
+    .entry-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 18px var(--accent-glow);
+      margin-top: 12px;
+      margin-left: 9px;
+    }
+
+    .entry-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.35);
+    }
+
+    .entry-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .entry-date {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    .entry-pill {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .entry-title {
+      font-size: 38px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    .entry-lede {
+      font-size: 20px;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+    }
+
+    .entry-body {
+      display: grid;
+      gap: 18px;
+      color: var(--text-muted);
+      font-size: 17px;
+    }
+
+    .capability-grid {
+      margin-top: 32px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .capability-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 20px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .capability-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: rgba(74, 222, 128, 0.12);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+
+    .capability-label {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .capability-desc {
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    .difference-section {
+      margin-top: 36px;
+      display: grid;
+      gap: 20px;
+    }
+
+    .difference-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .difference-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .difference-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 18px 18px 20px;
+      display: grid;
+      gap: 12px;
+      min-height: 180px;
+    }
+
+    .difference-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .difference-text {
+      color: var(--text-muted);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .capability-note {
+      margin-top: 24px;
+      padding: 18px 20px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      background: linear-gradient(135deg, rgba(74, 222, 128, 0.08), rgba(18, 18, 18, 0.9));
+      font-size: 16px;
+      color: var(--text-main);
+    }
+
+    .capability-note span {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    @media (max-width: 900px) {
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .page-title,
+      .page-subtitle {
+        text-align: left;
+      }
+
+      .difference-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .container {
+        padding: 72px 20px 96px;
+      }
+
+      .entry-title {
+        font-size: 30px;
+      }
+
+      .entry-card {
+        padding: 24px;
+      }
+
+      .capability-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <div class="grid-bg"></div>
+    <div class="glow"></div>
+
+    <div class="container">
+      <div class="topbar">
+        <div class="brand">
+          <div class="brand-name">n.codes</div>
+          <div class="brand-tag">Introducing</div>
+        </div>
+        <div>
+          <div class="page-title">Changelog</div>
+          <div class="page-subtitle">Product releases and capability updates</div>
+        </div>
+      </div>
+
+      <div class="timeline">
+        <div class="entry">
+          <div class="entry-dot"></div>
+          <div class="entry-card">
+            <div class="entry-meta">
+              <div class="entry-date">February 1, 2026</div>
+              <div class="entry-pill">New</div>
+            </div>
+            <div class="entry-title">Introducing Capability Map</div>
+            <div class="entry-lede">It is the guardrails layer for n.codes.</div>
+
+            <div class="entry-body">
+              <div>
+                It auto-maps what your app can do (APIs, schemas, components) and tells the LLM exactly what is
+                allowed to generate in a production setting.
+              </div>
+              <div>
+                Capability Map is the foundation of that, enabling agents to securely generate new features in
+                production, leveraging the capabilities of the existing backend and components.
+              </div>
+              <div>
+                Allowing users to generate their own custom features.
+              </div>
+            </div>
+
+            <div class="capability-grid">
+              <div class="capability-card">
+                <div class="capability-icon">E</div>
+                <div class="capability-label">Entities</div>
+                <div class="capability-desc">Data models surfaced as capabilities.</div>
+              </div>
+              <div class="capability-card">
+                <div class="capability-icon">A</div>
+                <div class="capability-label">Actions</div>
+                <div class="capability-desc">Mutations and commands the agent can use.</div>
+              </div>
+              <div class="capability-card">
+                <div class="capability-icon">Q</div>
+                <div class="capability-label">Queries</div>
+                <div class="capability-desc">Approved data access patterns for answers.</div>
+              </div>
+              <div class="capability-card">
+                <div class="capability-icon">C</div>
+                <div class="capability-label">Components</div>
+                <div class="capability-desc">UI building blocks already in your app.</div>
+              </div>
+            </div>
+
+            <div class="difference-section">
+              <div class="difference-title">How is it different from MCP or API docs?</div>
+              <div class="difference-grid">
+                <div class="difference-card">
+                  <div class="difference-label">MCP</div>
+                  <div class="difference-text">
+                    MCP is a protocol to access tools and resources. It does not define app-specific boundaries or
+                    UI affordances.
+                  </div>
+                </div>
+                <div class="difference-card">
+                  <div class="difference-label">API docs</div>
+                  <div class="difference-text">
+                    API docs describe endpoints. They do not capture permissions, product constraints, or frontend
+                    components. They are written for humans.
+                  </div>
+                </div>
+                <div class="difference-card">
+                  <div class="difference-label">Capability map</div>
+                  <div class="difference-text">
+                    Capability map merges APIs, schemas, UI components, constraints, and RBAC into a single
+                    "allowed actions" set so users can generate features safely within guardrails.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="capability-note">
+              <span>Capability Map</span> keeps agents inside the lines while unlocking user-generated features in
+              production.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
