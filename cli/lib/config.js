@@ -4,6 +4,7 @@ function defaultConfig() {
     model: 'default',
     projectName: null,
     capabilityMapPath: 'n.codes.capabilities.yaml',
+    allowHeuristicFallback: false,
   };
 }
 

@@ -666,8 +666,9 @@ const ACTION_VERBS = new Set([
   'verify',
 ]);
 
-function inferCapabilitiesFromFiles(fileIndex, { readFile } = {}) {
+function inferCapabilityMapAndRoutes(fileIndex, { readFile } = {}) {
   const map = defaultCapabilityMap();
+  const routes = [];
   const filePaths = Object.keys(fileIndex);
   map.meta.filesAnalyzed = filePaths.length;
   const usedActionNames = new Set();
@@ -691,6 +692,12 @@ function inferCapabilitiesFromFiles(fileIndex, { readFile } = {}) {
             endpoint: { method: entry.method, path: entry.path },
             description: buildQueryDescription({ path: entry.path }),
           };
+          routes.push({
+            name: queryName,
+            method: entry.method,
+            path: entry.path,
+            file: normalized,
+          });
           return;
         }
         const actionName = ensureUniqueName(entry.name || name, usedActionNames);
@@ -698,12 +705,22 @@ function inferCapabilitiesFromFiles(fileIndex, { readFile } = {}) {
           endpoint: { method: entry.method, path: entry.path },
           description: buildActionDescription({ method: entry.method, path: entry.path }),
         };
+        routes.push({
+          name: actionName,
+          method: entry.method,
+          path: entry.path,
+          file: normalized,
+        });
       });
       return;
     }
   });
 
-  return map;
+  return { map, routes };
+}
+
+function inferCapabilitiesFromFiles(fileIndex, { readFile } = {}) {
+  return inferCapabilityMapAndRoutes(fileIndex, { readFile }).map;
 }
 
 function applyChangedFiles(map, changedFiles) {
@@ -732,6 +749,7 @@ module.exports = {
   summarizeCapabilityMap,
   validateCapabilityMap,
   toCapabilityName,
+  inferCapabilityMapAndRoutes,
   inferCapabilitiesFromFiles,
   applyChangedFiles,
   enrichCapabilityWithAnalysis,

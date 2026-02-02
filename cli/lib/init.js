@@ -51,6 +51,14 @@ function normalizeAnswer(value, fallback) {
   return trimmed;
 }
 
+function parseYesNo(input, fallback = false) {
+  const trimmed = String(input || '').trim().toLowerCase();
+  if (!trimmed) return fallback;
+  if (['y', 'yes', 'true', '1'].includes(trimmed)) return true;
+  if (['n', 'no', 'false', '0'].includes(trimmed)) return false;
+  return fallback;
+}
+
 function apiKeyEnvVar(provider) {
   switch (provider) {
     case 'openai':
@@ -135,8 +143,13 @@ function writeEnvFile({ cwd, fs, path, key, value }) {
 
 async function ensureApiKey({ cwd, fs, path, io, provider }) {
   const apiKeyVar = apiKeyEnvVar(provider);
+  const existingEnv = process.env[apiKeyVar];
+  if (existingEnv) {
+    return { envPath: null, key: apiKeyVar, value: existingEnv, existing: true };
+  }
   const existing = readEnvVar({ cwd, fs, path, key: apiKeyVar });
   if (existing.value) {
+    process.env[apiKeyVar] = existing.value;
     return { envPath: existing.envPath, key: apiKeyVar, value: existing.value, existing: true };
   }
   const apiKey = normalizeAnswer(await io.prompt(`API key for ${provider} (${apiKeyVar}) `), '');
@@ -146,6 +159,7 @@ async function ensureApiKey({ cwd, fs, path, io, provider }) {
     throw new Error(message);
   }
   const envPath = writeEnvFile({ cwd, fs, path, key: apiKeyVar, value: apiKey });
+  process.env[apiKeyVar] = apiKey;
   io.log(`Saved API key to ${envPath}`);
   return { envPath, key: apiKeyVar, value: apiKey, existing: false };
 }
@@ -167,6 +181,10 @@ async function runInit({ cwd, fs, path, io, configPath }) {
   const modelResponse = await io.prompt(`Select model (1-${models.length}) [1] `);
   const model = parseModelChoice(modelResponse, provider);
 
+  io.log('\nHeuristic fallback is much less accurate and not context-aware.');
+  const fallbackResponse = await io.prompt('Enable heuristic fallback if LLM fails? (y/N) ');
+  const allowHeuristicFallback = parseYesNo(fallbackResponse, false);
+
   const projectQuestion = getProjectNameQuestion();
   const projectResponse = await io.prompt(`${projectQuestion.prompt} [${projectQuestion.defaultValue}] `);
   const projectName = normalizeAnswer(projectResponse, projectQuestion.defaultValue);
@@ -176,6 +194,7 @@ async function runInit({ cwd, fs, path, io, configPath }) {
     provider,
     model,
     projectName: projectName || null,
+    allowHeuristicFallback,
   };
 
   const targetPath = configPath || resolveConfigPath({ cwd, path });
@@ -193,6 +212,7 @@ module.exports = {
   formatModelChoices,
   parseModelChoice,
   normalizeAnswer,
+  parseYesNo,
   apiKeyEnvVar,
   ensureApiKey,
   runInit,

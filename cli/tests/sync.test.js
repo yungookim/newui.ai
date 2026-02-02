@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const { resolveCapabilityMapPath, writeCapabilityMap, buildCapabilityMap, runSync, analyzeRoutesWithLLM } = require('../lib/sync');
-const { defaultCapabilityMap } = require('../lib/capability-map');
+const { defaultCapabilityMap, parseCapabilityMapYaml } = require('../lib/capability-map');
 const { createTempDir, writeFile } = require('./helpers');
 const { createMemoryIO } = require('../lib/io');
 
@@ -33,13 +33,33 @@ test('buildCapabilityMap attaches project name', () => {
   assert.equal(map.projectName, 'Test');
 });
 
-test('runSync writes map and cache', () => {
+test('runSync writes map and cache', async () => {
   const cwd = createTempDir();
   writeFile(cwd, 'src/components/Widget.tsx', 'export const Widget = () => null;');
   const io = createMemoryIO();
-  const result = runSync({ cwd, fs, path, io });
+  const result = await runSync({ cwd, fs, path, io });
   assert.ok(fs.existsSync(result.mapPath));
   assert.ok(fs.existsSync(path.join(cwd, '.n.codes.cache.json')));
+});
+
+test('runSync enriches routes with analysis metadata', async () => {
+  const cwd = createTempDir();
+  writeFile(cwd, 'pages/api/bookings/index.ts', 'export async function POST() { return {}; }');
+  fs.writeFileSync(
+    path.join(cwd, 'n.codes.config.json'),
+    JSON.stringify({ provider: 'openai', model: 'gpt-5-mini', allowHeuristicFallback: true }, null, 2),
+    'utf8'
+  );
+  const originalKey = process.env.OPENAI_API_KEY;
+  delete process.env.OPENAI_API_KEY;
+  const io = createMemoryIO();
+  const result = await runSync({ cwd, fs, path, io });
+  process.env.OPENAI_API_KEY = originalKey;
+  const content = fs.readFileSync(result.mapPath, 'utf8');
+  const map = parseCapabilityMapYaml(content);
+  assert.ok(map.actions.postBookings);
+  assert.equal(map.actions.postBookings.analysisSource, 'heuristic');
+  assert.deepEqual(map.actions.postBookings.entities, []);
 });
 
 test('analyzeRoutesWithLLM returns results for each route', async () => {
@@ -53,7 +73,10 @@ test('analyzeRoutesWithLLM returns results for each route', async () => {
   writeFile(cwd, 'pages/api/bookings.ts', 'export function POST() {}');
   writeFile(cwd, 'pages/api/bookings/[id].ts', 'export function GET() {}');
 
-  const config = { provider: 'openai', model: 'gpt-5-mini' };
+  const config = { provider: 'openai', model: 'gpt-5-mini', allowHeuristicFallback: true };
+
+  const originalKey = process.env.OPENAI_API_KEY;
+  delete process.env.OPENAI_API_KEY;
 
   const results = await analyzeRoutesWithLLM({
     routes,
@@ -65,6 +88,8 @@ test('analyzeRoutesWithLLM returns results for each route', async () => {
     io: { log: () => {}, error: () => {} },
     cache: {}
   });
+
+  process.env.OPENAI_API_KEY = originalKey;
 
   assert.equal(results.length, 2);
   assert.equal(results[0].capabilityName, 'postBookings');
@@ -97,16 +122,21 @@ test('analyzeRoutesWithLLM uses cache when available', async () => {
     }
   };
 
+  const originalKey = process.env.OPENAI_API_KEY;
+  delete process.env.OPENAI_API_KEY;
+
   const results = await analyzeRoutesWithLLM({
     routes,
     cwd,
     fs,
     path,
-    config: { provider: 'openai', model: 'gpt-5-mini' },
+    config: { provider: 'openai', model: 'gpt-5-mini', allowHeuristicFallback: true },
     concurrency: 2,
     io: { log: () => {}, error: () => {} },
     cache
   });
+
+  process.env.OPENAI_API_KEY = originalKey;
 
   assert.equal(results[0].description, 'Cached description');
   assert.equal(results[0].analysisSource, 'llm');
@@ -137,18 +167,56 @@ test('analyzeRoutesWithLLM respects force flag to bypass cache', async () => {
     }
   };
 
+  const originalKey = process.env.OPENAI_API_KEY;
+  delete process.env.OPENAI_API_KEY;
+
   const results = await analyzeRoutesWithLLM({
     routes,
     cwd,
     fs,
     path,
-    config: { provider: 'openai', model: 'gpt-5-mini' },
+    config: { provider: 'openai', model: 'gpt-5-mini', allowHeuristicFallback: true },
     concurrency: 2,
     io: { log: () => {}, error: () => {} },
     cache,
     force: true  // Force re-analysis
   });
 
+  process.env.OPENAI_API_KEY = originalKey;
+
   // Without API key, should fallback to heuristic even with cache
   assert.equal(results[0].analysisSource, 'heuristic');
+});
+
+test('runSync samples routes for LLM analysis', async () => {
+  const cwd = createTempDir();
+  writeFile(cwd, 'pages/api/alpha.ts', 'export function POST() { return {}; }');
+  writeFile(cwd, 'pages/api/zeta.ts', 'export function POST() { return {}; }');
+  fs.writeFileSync(
+    path.join(cwd, 'n.codes.config.json'),
+    JSON.stringify({ provider: 'openai', model: 'gpt-5-mini', allowHeuristicFallback: true }, null, 2),
+    'utf8'
+  );
+
+  const originalKey = process.env.OPENAI_API_KEY;
+  delete process.env.OPENAI_API_KEY;
+
+  const io = createMemoryIO();
+  const result = await runSync({ cwd, fs, path, io, sample: 1 });
+
+  process.env.OPENAI_API_KEY = originalKey;
+
+  const content = fs.readFileSync(result.mapPath, 'utf8');
+  const map = parseCapabilityMapYaml(content);
+  const alphaName = Object.keys(map.actions).find(
+    (name) => map.actions[name].endpoint?.path === '/api/alpha'
+  );
+  const zetaName = Object.keys(map.actions).find(
+    (name) => map.actions[name].endpoint?.path === '/api/zeta'
+  );
+
+  assert.ok(alphaName);
+  assert.ok(zetaName);
+  assert.equal(map.actions[alphaName].analysisSource, 'heuristic');
+  assert.equal(map.actions[zetaName].analysisSource, undefined);
 });

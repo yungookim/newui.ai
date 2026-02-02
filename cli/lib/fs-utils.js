@@ -4,6 +4,9 @@ function createDryRunFs(fs, io) {
     writeFileSync(targetPath) {
       io.log(`[dry-run] write ${targetPath}`);
     },
+    unlinkSync(targetPath) {
+      io.log(`[dry-run] delete ${targetPath}`);
+    },
   };
 }
 

@@ -50,3 +50,15 @@ test('parseArgs recognizes -f shorthand for force', () => {
   assert.equal(result.command, 'sync');
   assert.equal(result.flags.force, true);
 });
+
+test('parseArgs parses sample size', () => {
+  const result = parseArgs(['sync', '--sample', '5']);
+  assert.equal(result.command, 'sync');
+  assert.equal(result.flags.sample, 5);
+});
+
+test('parseArgs recognizes --all flag', () => {
+  const result = parseArgs(['reset', '--all']);
+  assert.equal(result.command, 'reset');
+  assert.equal(result.flags.all, true);
+});

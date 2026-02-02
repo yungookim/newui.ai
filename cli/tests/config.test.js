@@ -19,6 +19,7 @@ test('defaultConfig provides baseline values', () => {
   assert.equal(config.provider, 'openai');
   assert.equal(config.model, 'default');
   assert.equal(config.capabilityMapPath, 'n.codes.capabilities.yaml');
+  assert.equal(config.allowHeuristicFallback, false);
 });
 
 test('provider validation normalizes and checks supported list', () => {
