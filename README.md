@@ -22,14 +22,15 @@ Every SaaS company has the same bottleneck: feature requests. Customers want mor
 
 When I started my last company, the only thing I wanted was to hit Product-Market-Fit. Once we hit product-market fit, we were overwhelmed by feature requests. It was the most intense 2 years of my life, and still is.  
 
-Users never run out of problems they want to solve with our product. We just could not hire fast enough to build. Even after we 10x'ed our development throughput with AI development tools and doubled our engineering bandwidth, users just kept wanting more. 
+Users never run out of problems they want to solve with our product. We just could not hire fast enough to build. Even after we 10x'ed our development throughput with AI development tools and doubled our engineering bandwidth, users just kept wanting more.
 
 These were Fortune 500 company customers paying serious money to solve multi-hundred-million-dollar problems, and we just did not have the bandwidth to build. Interestingly, many of the requests were not that complicated.
 
-*Examples:*
-* Need a custom dashboard, but you can use the same charts you already have. We just want to organize them in a specific way for our executives.
-* We need data export formatted in a specific way for our accounting team.
-* We need a bulk action to archive 1000s of records at once.
+_Examples:_
+
+- Need a custom dashboard, but you can use the same charts you already have. We just want to organize them in a specific way for our executives.
+- We need data export formatted in a specific way for our accounting team.
+- We need a bulk action to archive 1000s of records at once.
 
 Many of these requests were not that complicated. They were just different arrangements of the same building blocks.
 
@@ -37,24 +38,25 @@ We were so severely bottlenecked that even simple requests like the above had to
 
 Meanwhile, the backend API can already do most of what they're asking for. The bottleneck isn't capability—it's UI.
 
-
 ## Solution
 
 I'm creating n.codes. It's an open-source project that lets users build the feature they need with just a prompt in your app. It's agentic UI. Like Lovable, Replit, etc, but tightly integrated into your app, with access to the app's APIs/docs/whatever, and keeps a consistent style.
 
-
 ## How It Works
 
-The LLM doesn't write arbitrary code. 
+The LLM doesn't write arbitrary code.
 
 ### Local configuration
+
 - Store local API keys in `.env.local` (not `.env`) so they stay out of version control.
 - Capability map generation is LLM-based and requires a configured provider/model plus a valid API key.
 
 ### Capability map example
+
 When you add or change a route, `n.codes sync` turns it into structured capabilities.
 
 Input route:
+
 ```ts
 // pages/api/bookings/[id].ts
 export async function GET(req) {
@@ -63,6 +65,7 @@ export async function GET(req) {
 ```
 
 Output capability map snippet:
+
 ```yaml
 queries:
   getBooking:
@@ -87,26 +90,35 @@ entities:
 
 1. It reads through your frontend components to understand the capabilities of your app and styles. It then uses that knowledge to build the UI that the user asks for. It keeps a consistent style.
 
-2. It reads through your backend APIs, docs, and schemas to create a *"capability map"* of your app. This includes entities, actions, queries, and constraints.
+2. It reads through your backend APIs, docs, and schemas to create a _"capability map"_ of your app. This includes entities, actions, queries, and constraints.
 
 3. Given the user's prompt, it uses the capability map to build the UI that the user asks for, and creates a private component for that user in a sandboxed runtime.
 
 n.codes is like a forward-deployed engineer for the user. It's Cloud Code that lives in your app for the user.
 
+## Project Links
+
+**GitHub:** https://github.com/yungookim/n.codes
+**website** https://n.codes
 
 ## Rules
+
 ### Safety/control
-* No arbitrary code execution
-* Permission-aware (RBAC scoped)
-* Audit trail of generated UIs + actions taken
+
+- No arbitrary code execution
+- Permission-aware (RBAC scoped)
+- Audit trail of generated UIs + actions taken
 
 ### Product boundaries
-* It’s for the 90%: CRUD + analytics + workflows
-* Not for pixel-perfect marketing pages
-* Not for bypassing business logic
+
+- It’s for the 90%: CRUD + analytics + workflows
+- Not for pixel-perfect marketing pages
+- Not for bypassing business logic
 
 ### Ownership
+
 Generated UIs can be:
-* Private per user
-* Shared with a team
-* Promoted to “official” UI by admins
+
+- Private per user
+- Shared with a team
+- Promoted to “official” UI by admins
