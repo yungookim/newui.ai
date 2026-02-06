@@ -54,6 +54,10 @@ CLI:
 - Coverage gate: `npm run coverage` must stay at or above 80% for lines, functions, branches, and statements.
 - AI agents: always run `npm run coverage` before finishing work and confirm the coverage thresholds pass.
 - Smoke checks: open `public/index.html` and `public/demo/index.html`, verify layout, interactions, and responsive behavior.
+- **Mobile testing**: Always test responsive behavior at 600px breakpoint. Use browser dev tools device emulation.
+
+## Landing Page Guidelines
+See `public/AGENTS.md` for detailed landing page and mobile-specific patterns.
 
 ## Commit & Pull Request Guidelines
 - Commit messages are short and imperative (e.g., “Add interactive demo”, “Fix wording for clarity”).
