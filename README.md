@@ -99,6 +99,60 @@ entities:
 
 n.codes is like a forward-deployed engineer for the user. It's Cloud Code that lives in your app for the user.
 
+## WIP: Widget SDK Installation
+
+> This section documents the widget SDK that is currently under development.
+
+### 1. Install the widget
+
+```bash
+npx n.codes install
+```
+
+This auto-detects your framework (Next.js, Express, Vue, SvelteKit, etc.) and generates a step-by-step `INSTALL.md` at `.n.codes/INSTALL.md`.
+
+### 2. Add the script tag
+
+Load the widget bundle and initialize it in your app's layout:
+
+```html
+<script src="/ncodes-widget.js"></script>
+<script>
+  NCodes.init({
+    user: { id: '1', name: 'Demo User' },
+    mode: 'simulation',
+    theme: 'dark',
+  });
+</script>
+```
+
+For **Next.js App Router**:
+
+```tsx
+import Script from "next/script";
+
+// In your layout.tsx body:
+<Script src="/ncodes-widget.js" strategy="beforeInteractive" />
+<Script id="ncodes-init" strategy="afterInteractive">{`
+  NCodes.init({
+    user: { id: '1', name: 'Demo User' },
+    mode: 'simulation',
+    theme: 'dark',
+  });
+`}</Script>
+```
+
+### 3. That's it
+
+The widget renders inside a **Shadow DOM** — fully isolated from your app's CSS and DOM. It includes:
+
+- AI prompt panel with generation status
+- Feature history persisted in localStorage
+- Inline result rendering in an expanded dialog
+- Animated glow border
+
+See [full documentation](docs/widget-installation-security.md) for the security model and framework-specific guides.
+
 ## Project Links
 
 **GitHub:** https://github.com/yungookim/n.codes
