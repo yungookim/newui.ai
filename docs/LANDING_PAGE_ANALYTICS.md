@@ -2,9 +2,24 @@
 
 ## Overview
 
-PostHog analytics are integrated into n.codes public landing pages to track user engagement and understand how visitors interact with our product.
+n.codes uses two analytics systems on public landing pages:
+1. **Google Analytics 4 (GA4)** - For standard web analytics and user behavior tracking
+2. **PostHog** - For product-focused event tracking and feature adoption
 
-## Tracked Events
+## Google Analytics 4
+
+GA4 automatically tracks:
+- **Page views** - When users visit any page
+- **Scroll depth** - How far down the page users scroll
+- **Click tracking** - Button and link interactions
+- **Session duration** - How long users spend on pages
+- **Traffic source** - Referrers, campaigns, organic search
+- **Device & browser** - User device type, browser, OS
+- **Demographics** - Location, language, user interests (with consent)
+
+GA4 is configured with measurement ID: `G-2G927JQW7Y`
+
+## Tracked Events (PostHog)
 
 ### All Pages
 - **page_view** - Recorded when any page loads
@@ -45,22 +60,38 @@ PostHog analytics are integrated into n.codes public landing pages to track user
 
 ## Why We Track
 
-We use this data to:
+**GA4 helps us:**
+- Understand overall website traffic and engagement
+- Identify popular pages and conversion funnels
+- Measure campaign effectiveness
+- Track technical performance metrics
+
+**PostHog helps us:**
 - Understand which features are most interesting to visitors
 - Identify drop-off points in the demo experience
-- Measure homepage engagement
-- Optimize landing page content based on actual usage
+- Measure specific feature adoption
+- Optimize landing page content based on actual product usage
 
 ## Opting Out
 
 Users can opt out using browser privacy settings:
-- **Do Not Track** header will be respected by PostHog
-- Browser privacy mode / incognito will not be tracked
-- You can block PostHog's domain if you prefer
+- **Do Not Track (DNT)** header is respected by both GA4 and PostHog
+- **Browser privacy mode / incognito** mode disables tracking
+- **Browser extensions** like uBlock Origin can block tracking scripts
+- **Google's opt-out browser extension** disables GA4: https://tools.google.com/dlpage/gaoptout
 
 ## Implementation Details
 
-PostHog is loaded asynchronously from `us.posthog.com`. The tracking script:
-- Does not block page rendering
-- Uses event capturing for non-blocking data collection
+**Google Analytics 4:**
+- Loaded asynchronously from `googletagmanager.com`
+- Uses standard gtag.js library
+- Automatically tracks page views and user interactions
+- Non-blocking, does not affect page performance
+
+**PostHog:**
+- Loaded asynchronously from `us.i.posthog.com`
+- Uses event capturing for custom event tracking
 - Automatically batches events for efficiency
+- Non-blocking, does not affect page performance
+
+Both scripts are loaded in the `<head>` or before closing `</body>` tag and configured to load asynchronously.
