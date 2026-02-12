@@ -1079,6 +1079,67 @@ function getStyles(theme) {
         grid-template-columns: 1fr;
       }
     }
+
+    /* ===== Error State ===== */
+    .ncodes-error-state {
+      text-align: center;
+      padding: 32px 20px;
+    }
+
+    .ncodes-error-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+
+    .ncodes-error-message {
+      font-size: 14px;
+      color: var(--ncodes-text-muted);
+      line-height: 1.5;
+      margin-bottom: 20px;
+      max-width: 320px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .ncodes-error-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .ncodes-error-retry {
+      padding: 8px 18px;
+      background: var(--ncodes-accent);
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--ncodes-font);
+      transition: background 0.15s ease;
+    }
+
+    .ncodes-error-retry:hover {
+      background: var(--ncodes-accent-hover);
+    }
+
+    .ncodes-error-fallback {
+      padding: 8px 18px;
+      background: transparent;
+      border: 1px solid var(--ncodes-border-color);
+      border-radius: 8px;
+      color: var(--ncodes-text-muted);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: var(--ncodes-font);
+      transition: border-color 0.15s ease;
+    }
+
+    .ncodes-error-fallback:hover {
+      border-color: var(--ncodes-text-muted);
+    }
   `;
 }
 

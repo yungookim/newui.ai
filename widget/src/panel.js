@@ -254,6 +254,46 @@ function updateHistoryList(panel, history) {
   });
 }
 
+/**
+ * Replace quick-prompt buttons in the panel.
+ * Creates the quick-prompts section if it doesn't exist.
+ * @param {HTMLElement} panel
+ * @param {Array<{label: string, prompt: string}>} prompts
+ */
+function updateQuickPrompts(panel, prompts) {
+  const promptView = panel.querySelector('.prompt-view');
+  if (!promptView) return;
+
+  // Remove existing quick-prompts section
+  const existing = promptView.querySelector('.quick-prompts');
+  if (existing) existing.remove();
+
+  if (!prompts || prompts.length === 0) return;
+
+  const quickSection = document.createElement('div');
+  quickSection.className = 'quick-prompts';
+  const quickLabel = document.createElement('div');
+  quickLabel.className = 'quick-prompts-label';
+  quickLabel.textContent = 'Try these examples:';
+  quickSection.appendChild(quickLabel);
+
+  prompts.forEach((qp) => {
+    const btn = document.createElement('button');
+    btn.className = 'quick-prompt';
+    btn.setAttribute('data-prompt', qp.prompt);
+    btn.textContent = qp.label;
+    quickSection.appendChild(btn);
+  });
+
+  // Insert before generation-status (last child of promptView)
+  const status = promptView.querySelector('.generation-status');
+  if (status) {
+    promptView.insertBefore(quickSection, status);
+  } else {
+    promptView.appendChild(quickSection);
+  }
+}
+
 module.exports = {
   createPanel,
   openPanel,
@@ -263,4 +303,5 @@ module.exports = {
   showPromptView,
   getResultContainer,
   updateHistoryList,
+  updateQuickPrompts,
 };
