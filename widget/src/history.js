@@ -18,14 +18,18 @@ function getHistory() {
   }
 }
 
-function addToHistory({ prompt, templateId }) {
+function addToHistory({ prompt, templateId, dsl }) {
   const history = getHistory();
   const entry = {
     id: String(Date.now()),
     prompt,
-    templateId,
+    templateId: templateId || null,
     timestamp: Date.now(),
   };
+  // Store DSL for live mode entries (replay without re-calling API)
+  if (dsl) {
+    entry.dsl = dsl;
+  }
   history.unshift(entry);
   if (history.length > MAX_ENTRIES) {
     history.length = MAX_ENTRIES;

@@ -19,10 +19,15 @@ const {
   showPromptView,
   getResultContainer,
   updateHistoryList,
+  updateQuickPrompts,
 } = require('./panel');
 const { findTemplate, getTemplateHTML, STATUS_MESSAGES } = require('./simulation');
 const { renderGeneratedUI, clearRenderedUI } = require('./renderer');
 const { getHistory, addToHistory, removeFromHistory } = require('./history');
+const { fetchCapabilityMap, generateQuickPrompts, matchCapability } = require('./capability-map');
+const { validateDSL } = require('../../shared/dsl-types');
+const { renderDSL, getDSLStyles } = require('./components/index');
+const { callGenerateAPI, GenerateError } = require('./api-client');
 
 let _state = null;
 
@@ -58,12 +63,12 @@ function init(userConfig) {
   host.id = 'ncodes-root';
   const shadow = host.attachShadow({ mode: 'open' });
 
-  // Inject styles
+  // Inject styles (include DSL component styles for live mode rendering)
   const styleEl = document.createElement('style');
   const resolvedTheme = config.theme === 'auto'
     ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
     : config.theme;
-  styleEl.textContent = getStyles(resolvedTheme);
+  styleEl.textContent = getStyles(resolvedTheme) + getDSLStyles();
   shadow.appendChild(styleEl);
 
   // Create trigger and panel
@@ -85,6 +90,7 @@ function init(userConfig) {
     panel,
     mounted: true,
     isGenerating: false,
+    capabilityMap: null,
   };
 
   // Wire up panel event listeners
@@ -92,6 +98,19 @@ function init(userConfig) {
 
   // Load history on init
   refreshHistoryList();
+
+  // Fetch capability map in background (non-blocking)
+  fetchCapabilityMap(config.capabilityMapUrl).then((capMap) => {
+    if (!_state || !_state.mounted) return;
+    _state.capabilityMap = capMap;
+
+    // If cap map loaded and no static quick prompts configured, generate from capabilities
+    if (capMap && config.quickPrompts.length === 0) {
+      const prompts = generateQuickPrompts(capMap);
+      updateQuickPrompts(_state.panel, prompts);
+      wireQuickPromptClicks();
+    }
+  });
 }
 
 function wireEvents() {
@@ -121,17 +140,8 @@ function wireEvents() {
     });
   }
 
-  // Quick prompt buttons
-  const quickBtns = panel.querySelectorAll('.quick-prompt');
-  quickBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const input = panel.querySelector('.prompt-input');
-      if (input) {
-        input.value = btn.getAttribute('data-prompt');
-        input.focus();
-      }
-    });
-  });
+  // Quick prompt buttons (static ones from config)
+  wireQuickPromptClicks();
 
   // History list — event delegation for clicks and deletes
   const historyList = panel.querySelector('.history-list');
@@ -150,6 +160,43 @@ function wireEvents() {
 
   // Close on click outside
   document.addEventListener('click', handleOutsideClick);
+}
+
+function wireQuickPromptClicks() {
+  if (!_state || !_state.mounted) return;
+  const quickBtns = _state.panel.querySelectorAll('.quick-prompt');
+  quickBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const input = _state.panel.querySelector('.prompt-input');
+      if (input) {
+        input.value = btn.getAttribute('data-prompt');
+        input.focus();
+      }
+    });
+  });
+}
+
+/**
+ * Select a template for the prompt. When the capability map is available,
+ * uses capability matching to find relevant context. Falls back to
+ * simulation keyword matching when no cap map or no capability match.
+ */
+function selectTemplate(prompt, capabilityMap) {
+  // First: always try simulation keyword matching (it handles known demo keywords)
+  const keywordMatch = findTemplate(prompt);
+
+  // If no capability map, use simulation only
+  if (!capabilityMap) return keywordMatch;
+
+  // Try capability-aware matching
+  const capMatch = matchCapability(prompt, capabilityMap);
+  if (!capMatch) return keywordMatch;
+
+  // Capability matched — map to best available template based on type
+  // Queries (read data) → data table (invoices), Actions (write) → invoices (until forms exist)
+  // Simulation keywords still take priority when they match non-default templates
+  if (keywordMatch !== 'invoices') return keywordMatch; // dashboard/archive matched by keyword
+  return 'invoices'; // capability-matched but no specific template yet — data table is best default
 }
 
 function handleEscapeKey(e) {
@@ -196,19 +243,33 @@ function handleHistoryClick(e) {
   // Check if a history item row was clicked
   const item = e.target.closest('.history-item');
   if (item) {
-    const templateId = item.getAttribute('data-template-id');
+    const historyId = item.getAttribute('data-history-id');
     const promptText = item.querySelector('.history-prompt-text');
     const prompt = promptText ? promptText.textContent : '';
-    showHistoryResult(templateId, prompt);
+    showHistoryResult(historyId, prompt);
   }
 }
 
-function showHistoryResult(templateId, promptText) {
+function showHistoryResult(historyId, promptText) {
   if (!_state || !_state.mounted) return;
-  const html = getTemplateHTML(templateId);
+
+  // Find the history entry to check if it has DSL data
+  const history = getHistory();
+  const entry = history.find((h) => h.id === historyId);
+
   const container = getResultContainer(_state.panel);
   clearRenderedUI(container);
-  renderGeneratedUI(container, html);
+
+  if (entry && entry.dsl) {
+    // Live mode entry — re-render stored DSL
+    renderDSL(container, entry.dsl);
+  } else {
+    // Simulation entry — render from template
+    const templateId = entry ? entry.templateId : 'invoices';
+    const html = getTemplateHTML(templateId);
+    renderGeneratedUI(container, html);
+  }
+
   showResultView(_state.panel, promptText);
 }
 
@@ -230,24 +291,84 @@ async function handleGenerate() {
     if (btnLoading) btnLoading.style.display = 'flex';
   }
 
-  // Animate status
+  const { config } = _state;
+  const isLive = config.mode === 'live' && _state.capabilityMap;
+
+  if (isLive) {
+    await handleGenerateLive(prompt, generateBtn, textarea);
+  } else {
+    await handleGenerateSimulation(prompt, generateBtn, textarea);
+  }
+
+  _state.isGenerating = false;
+}
+
+/**
+ * Live mode: call API → validate DSL → render.
+ * Shows loading state during API call, error state on failure.
+ * Falls back to simulation after all retries are exhausted.
+ */
+async function handleGenerateLive(prompt, generateBtn, textarea) {
+  // Show loading state
+  showLoadingState();
+
+  try {
+    const { config, capabilityMap } = _state;
+    const result = await callGenerateAPI(config.apiUrl, {
+      prompt,
+      capabilityMap,
+      provider: config.provider,
+      model: config.model,
+    });
+
+    // Validate DSL
+    const { valid, errors } = validateDSL(result.dsl);
+    if (!valid) {
+      console.warn('[n.codes] Invalid DSL response:', errors);
+      throw new GenerateError('The AI generated an invalid response. Please try again.', 422, null);
+    }
+
+    // Save DSL to history
+    addToHistory({ prompt, dsl: result.dsl });
+    refreshHistoryList();
+
+    // Render DSL
+    hideLoadingState();
+    const container = getResultContainer(_state.panel);
+    clearRenderedUI(container);
+    renderDSL(container, result.dsl);
+    showResultView(_state.panel, prompt);
+    resetGenerateUI(generateBtn, textarea);
+  } catch (err) {
+    hideLoadingState();
+    console.warn('[n.codes] Live generation failed:', err.message);
+
+    // Show error in result view with retry option
+    showErrorState(err.message, prompt, generateBtn, textarea);
+  }
+}
+
+/**
+ * Simulation mode: keyword match → local template rendering.
+ */
+async function handleGenerateSimulation(prompt, generateBtn, textarea) {
   await animateStatus();
 
-  // Find template and render
-  const templateId = findTemplate(prompt);
+  const templateId = selectTemplate(prompt, _state.capabilityMap);
   const html = getTemplateHTML(templateId);
 
-  // Save to history
   addToHistory({ prompt, templateId });
   refreshHistoryList();
 
-  // Render inline in result view
   const container = getResultContainer(_state.panel);
   clearRenderedUI(container);
   renderGeneratedUI(container, html);
   showResultView(_state.panel, prompt);
 
-  // Reset generate button state
+  resetGenerateUI(generateBtn, textarea);
+}
+
+function resetGenerateUI(generateBtn, textarea) {
   if (generateBtn) {
     generateBtn.disabled = false;
     const btnText = generateBtn.querySelector('.btn-text');
@@ -258,10 +379,82 @@ async function handleGenerate() {
   const statusEl = _state.panel.querySelector('.generation-status');
   if (statusEl) statusEl.style.display = 'none';
 
-  // Clear textarea for next prompt
   if (textarea) textarea.value = '';
+}
 
-  _state.isGenerating = false;
+function showLoadingState() {
+  if (!_state || !_state.mounted) return;
+  const statusEl = _state.panel.querySelector('.generation-status');
+  const statusText = _state.panel.querySelector('.status-text');
+  const statusIcon = _state.panel.querySelector('.status-icon');
+  if (statusEl) statusEl.style.display = 'block';
+  if (statusText) statusText.textContent = 'Generating with AI...';
+  if (statusIcon) statusIcon.classList.add('spinning');
+}
+
+function hideLoadingState() {
+  if (!_state || !_state.mounted) return;
+  const statusEl = _state.panel.querySelector('.generation-status');
+  if (statusEl) statusEl.style.display = 'none';
+}
+
+function showErrorState(message, prompt, generateBtn, textarea) {
+  if (!_state || !_state.mounted) return;
+
+  const container = getResultContainer(_state.panel);
+  clearRenderedUI(container);
+
+  // Build error UI using safe DOM APIs
+  const errorDiv = document.createElement('div');
+  errorDiv.className = 'ncodes-error-state';
+
+  const iconEl = document.createElement('div');
+  iconEl.className = 'ncodes-error-icon';
+  iconEl.textContent = '\u26A0'; // warning sign
+
+  const msgEl = document.createElement('div');
+  msgEl.className = 'ncodes-error-message';
+  msgEl.textContent = message;
+
+  const actionsDiv = document.createElement('div');
+  actionsDiv.className = 'ncodes-error-actions';
+
+  const retryBtn = document.createElement('button');
+  retryBtn.className = 'ncodes-error-retry';
+  retryBtn.textContent = 'Try again';
+  retryBtn.addEventListener('click', () => {
+    // Re-populate textarea and re-trigger generation
+    if (textarea) textarea.value = prompt;
+    showPromptView(_state.panel);
+    resetGenerateUI(generateBtn, textarea);
+    _state.isGenerating = false;
+    handleGenerate();
+  });
+
+  const fallbackBtn = document.createElement('button');
+  fallbackBtn.className = 'ncodes-error-fallback';
+  fallbackBtn.textContent = 'Use demo mode';
+  fallbackBtn.addEventListener('click', async () => {
+    showPromptView(_state.panel);
+    resetGenerateUI(generateBtn, textarea);
+    _state.isGenerating = false;
+    // Run simulation path
+    if (textarea) textarea.value = prompt;
+    _state.isGenerating = true;
+    await handleGenerateSimulation(prompt, generateBtn, textarea);
+    _state.isGenerating = false;
+  });
+
+  actionsDiv.appendChild(retryBtn);
+  actionsDiv.appendChild(fallbackBtn);
+
+  errorDiv.appendChild(iconEl);
+  errorDiv.appendChild(msgEl);
+  errorDiv.appendChild(actionsDiv);
+  container.appendChild(errorDiv);
+
+  showResultView(_state.panel, prompt);
+  resetGenerateUI(generateBtn, textarea);
 }
 
 async function animateStatus() {
