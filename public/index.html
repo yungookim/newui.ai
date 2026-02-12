@@ -39,8 +39,8 @@
   <meta name="twitter:image:alt" content="n.codes logo on a dark grid background">
 
   <!-- Additional Meta -->
-  <meta name="theme-color" content="#050505">
-  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#f7f5f1">
+  <meta name="color-scheme" content="light">
 
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -75,18 +75,19 @@
     rel="stylesheet">
   <style>
     :root {
-      --bg-body: #050505;
-      --bg-card: #0f0f0f;
-      --bg-code: #111111;
-      --border-color: #262626;
-      --text-main: #ededed;
-      --text-muted: #a1a1aa;
-      --text-dim: #52525b;
-      --accent: #4ade80;
-      --accent-dim: rgba(74, 222, 128, 0.1);
-      --warning: #fbbf24;
-      --warning-dim: rgba(251, 191, 36, 0.12);
-      --warning-border: rgba(251, 191, 36, 0.35);
+      --bg-body: #f6f4ef;
+      --bg-card: #ffffff;
+      --bg-code: #f3f1ec;
+      --border-color: #e6e0d6;
+      --text-main: #111827;
+      --text-muted: #4b5563;
+      --text-dim: #6b7280;
+      --accent: #1f2937;
+      --accent-dim: rgba(31, 41, 55, 0.08);
+      --warning: #8a5a00;
+      --warning-dim: rgba(138, 90, 0, 0.1);
+      --warning-border: rgba(138, 90, 0, 0.3);
+      --paper-shadow: 0 16px 40px rgba(17, 24, 39, 0.08);
     }
 
     * {
@@ -106,45 +107,67 @@
       line-height: 1.7;
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
+      position: relative;
     }
 
     .container {
-      max-width: 680px;
-      margin: 0 auto;
-      padding: 120px 24px;
-      min-height: 100vh;
+      max-width: 900px;
+      margin: 56px auto;
+      padding: 88px 84px 112px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 0;
+      box-shadow: var(--paper-shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .container > * {
+      position: relative;
     }
 
     h1 {
-      font-size: 3rem;
+      font-size: 3.2rem;
       font-weight: 600;
       letter-spacing: -0.03em;
-      color: #fff;
-      margin-bottom: 24px;
+      color: var(--text-main);
+      margin-bottom: 12px;
       line-height: 1.1;
       display: flex;
       align-items: center;
       gap: 16px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     h1 svg {
-      color: var(--accent);
+      color: var(--text-dim);
     }
 
     .tagline {
-      font-size: 1.35rem;
+      font-size: 1.25rem;
       color: var(--text-muted);
-      margin-bottom: 64px;
+      margin-bottom: 40px;
       font-weight: 400;
       letter-spacing: -0.01em;
-      line-height: 1.5;
+      line-height: 1.65;
+    }
+
+    .tagline-small {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--text-dim);
+      font-weight: 500;
+      margin-top: 6px;
+      margin-bottom: 0;
     }
 
     .early-access {
-      margin: 0 0 48px;
-      padding: 12px 16px;
-      border-radius: 12px;
+      margin: 0 0 40px;
+      padding: 14px 18px;
+      border-radius: 0;
       border: 1px solid var(--warning-border);
+      border-left: 4px solid var(--warning);
       background: var(--warning-dim);
       color: var(--text-main);
       font-size: 1rem;
@@ -156,34 +179,35 @@
     }
 
     h2 {
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 600;
-      color: #fff;
-      margin-top: 64px;
-      margin-bottom: 24px;
+      color: var(--text-main);
+      margin-top: 52px;
+      margin-bottom: 20px;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.18em;
       display: flex;
       align-items: center;
       gap: 12px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     h2::after {
       content: '';
       flex: 1;
       height: 1px;
-      background: var(--border-color);
+      background: linear-gradient(90deg, var(--border-color), transparent);
     }
 
     p {
       margin-bottom: 20px;
       color: var(--text-muted);
-      font-size: 1.05rem;
+      font-size: 1.02rem;
     }
 
     .highlight {
-      color: #fff;
-      font-weight: 500;
+      color: var(--text-main);
+      font-weight: 600;
     }
 
     code {
@@ -199,7 +223,7 @@
     .code-block {
       background: var(--bg-code);
       border: 1px solid var(--border-color);
-      border-radius: 8px;
+      border-radius: 0;
       padding: 24px;
       margin: 32px 0;
       overflow-x: auto;
@@ -214,11 +238,15 @@
     }
 
     .section-box {
-      background: var(--bg-card);
+      background: #ffffff;
       border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 40px;
-      margin: 64px 0;
+      border-left: 3px solid var(--accent);
+      border-radius: 0;
+      padding: 32px;
+      margin: 56px 0;
+      box-shadow: none;
+      position: relative;
+      overflow: hidden;
     }
 
     .section-box h2 {
@@ -230,9 +258,10 @@
       flex-direction: column;
       align-items: center;
       gap: 0;
-      margin: 32px 0;
+      margin: 28px 0;
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.75rem;
+      color: var(--text-muted);
     }
 
     .diagram-row {
@@ -245,17 +274,17 @@
       border: 1px solid var(--border-color);
       padding: 12px 20px;
       text-align: center;
-      background: var(--bg-body);
-      border-radius: 6px;
+      background: var(--bg-card);
+      border-radius: 0;
       min-width: 140px;
     }
 
     .diagram-section-wrapper {
       border: 1px solid var(--border-color);
-      border-radius: 8px;
+      border-radius: 0;
       padding: 20px;
       margin: 24px 0;
-      background: rgba(15, 15, 15, 0.3);
+      background: #faf8f5;
       position: relative;
     }
 
@@ -263,7 +292,7 @@
       position: absolute;
       top: -12px;
       left: 16px;
-      background: var(--bg-body);
+      background: var(--bg-card);
       padding: 0 8px;
       color: var(--text-muted);
       font-size: 0.85rem;
@@ -340,7 +369,7 @@
     }
 
     .diagram-arrow {
-      color: var(--border-color);
+      color: var(--text-dim);
       font-size: 0.6rem;
       line-height: 1;
       margin: -4px 0;
@@ -372,6 +401,39 @@
       }
     }
 
+    @keyframes fade-up {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes rule-glide {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fade-up 0.85s ease forwards;
+      animation-delay: var(--delay, 0s);
+    }
+
     /* Example UI Mockup */
     .example-wrapper {
       margin: 40px 0;
@@ -388,15 +450,15 @@
     }
 
     .app-frame {
-      background: var(--bg-body);
+      background: #ffffff;
       border: 1px solid var(--border-color);
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 18px 36px rgba(17, 24, 39, 0.12);
     }
 
     .app-titlebar {
-      background: var(--bg-card);
+      background: #f7f5f1;
       padding: 12px 16px;
       display: flex;
       align-items: center;
@@ -429,7 +491,7 @@
       font-size: 0.8rem;
       color: var(--text-dim);
       margin-right: 54px;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       font-weight: 500;
     }
 
@@ -503,8 +565,8 @@
 
     .app-table .status-pending {
       display: inline-block;
-      color: #fbbf24;
-      background: rgba(251, 191, 36, 0.1);
+      color: #8b5e00;
+      background: rgba(139, 94, 0, 0.12);
       padding: 4px 10px;
       border-radius: 6px;
       font-size: 0.7rem;
@@ -533,19 +595,19 @@
 
     .app-btn-approve {
       background: var(--accent);
-      color: #000;
+      color: #fff;
     }
 
     .app-btn-reject {
-      background: var(--border-color);
+      background: #efe9df;
       color: var(--text-muted);
     }
 
     ul,
     ol {
       margin: 24px 0;
-      padding-left: 0;
-      list-style-position: inside;
+      padding-left: 1.2rem;
+      list-style-position: outside;
     }
 
     li {
@@ -560,7 +622,7 @@
     }
 
     .feature {
-      border-left: 2px solid var(--border-color);
+      border-left: 2px solid var(--accent);
       padding-left: 24px;
     }
 
@@ -572,19 +634,23 @@
     }
 
     blockquote {
-      border-left: 3px solid var(--accent);
-      padding-left: 24px;
+      border-left: 4px solid var(--accent);
+      padding: 18px 22px;
       margin: 40px 0;
       color: var(--text-main);
       font-style: italic;
-      font-size: 1.2rem;
-      line-height: 1.6;
+      font-size: 1.15rem;
+      line-height: 1.7;
+      background: transparent;
+      border-radius: 0;
     }
 
     .divider {
       height: 1px;
-      background: var(--border-color);
+      background: linear-gradient(90deg, transparent, rgba(31, 41, 55, 0.45), transparent);
+      background-size: 200% 100%;
       margin: 64px 0;
+      animation: rule-glide 14s ease infinite;
     }
 
     footer {
@@ -598,20 +664,24 @@
 
     a {
       color: var(--accent);
-      text-decoration: none;
-      transition: color 0.2s;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      text-decoration-thickness: 1px;
+      transition: color 0.2s ease;
     }
 
     a:hover {
-      color: #86efac;
-      text-decoration: none;
+      color: #153759;
+      text-decoration-thickness: 2px;
     }
 
     .top-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 24px;
+      margin-bottom: 40px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--border-color);
     }
 
     .top-header h1 {
@@ -625,7 +695,16 @@
     }
 
     .top-links a {
-      font-size: 0.85rem;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      text-decoration: none;
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+
+    .top-links a:hover {
+      color: var(--accent);
     }
 
     .demo-cta {
@@ -633,12 +712,15 @@
       align-items: center;
       gap: 10px;
       padding: 14px 24px;
-      background: var(--accent);
-      color: #000;
+      background: #ffffff;
+      color: var(--text-main);
       font-weight: 600;
       font-size: 1rem;
-      border-radius: 10px;
+      border-radius: 0;
+      border: 1px solid var(--text-main);
+      text-decoration: none;
       transition: all 0.2s ease;
+      box-shadow: none;
     }
 
     .cta-row {
@@ -650,9 +732,10 @@
     }
 
     .changelog-teaser {
-      background: var(--bg-card);
+      background: #ffffff;
       border: 1px solid var(--border-color);
-      border-radius: 14px;
+      border-left: 3px solid var(--accent);
+      border-radius: 0;
       padding: 20px 22px;
       margin: 24px 0 64px;
       display: grid;
@@ -670,11 +753,11 @@
       font-size: 0.7rem;
       letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: var(--accent);
-      background: rgba(74, 222, 128, 0.12);
-      border: 1px solid rgba(74, 222, 128, 0.3);
+      color: var(--text-main);
+      background: rgba(31, 41, 55, 0.08);
+      border: 1px solid rgba(31, 41, 55, 0.18);
       padding: 6px 10px;
-      border-radius: 999px;
+      border-radius: 0;
       font-weight: 600;
     }
 
@@ -688,7 +771,7 @@
 
     .changelog-title {
       font-size: 1.3rem;
-      color: #fff;
+      color: var(--text-main);
       font-weight: 600;
       letter-spacing: -0.01em;
     }
@@ -703,6 +786,7 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      text-decoration: none;
     }
 
     .changelog-link span {
@@ -718,26 +802,27 @@
       align-items: center;
       gap: 10px;
       padding: 12px 20px;
-      border-radius: 10px;
-      border: 1px solid rgba(74, 222, 128, 0.35);
-      color: var(--text);
+      border-radius: 0;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
       font-weight: 600;
       font-size: 0.95rem;
-      background: rgba(74, 222, 128, 0.08);
+      background: #ffffff;
+      text-decoration: none;
       transition: all 0.2s ease;
     }
 
     .star-cta:hover {
       border-color: var(--accent);
-      background: rgba(74, 222, 128, 0.18);
+      background: rgba(31, 41, 55, 0.06);
       transform: translateY(-2px);
     }
 
     .demo-cta:hover {
-      background: #86efac;
-      color: #000;
+      background: var(--text-main);
+      color: #ffffff;
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(74, 222, 128, 0.3);
+      box-shadow: 0 10px 20px rgba(17, 24, 39, 0.12);
     }
 
     .demo-cta-icon {
@@ -752,21 +837,50 @@
       transform: translateX(4px);
     }
 
+    @media (prefers-reduced-motion: reduce) {
+      .reveal {
+        animation: none;
+        opacity: 1;
+        transform: none;
+      }
+
+      .divider {
+        animation: none;
+      }
+    }
+
     /* Mobile styles */
     @media (max-width: 600px) {
       .container {
-        padding-top: 24px;
+        margin: 0;
+        padding: 48px 24px 80px;
+        border-radius: 0;
+        box-shadow: none;
       }
 
       .top-header {
         flex-direction: column-reverse;
         align-items: stretch;
         gap: 12px;
+        padding-bottom: 20px;
       }
 
       .top-links {
         justify-content: center;
         padding-top: 0;
+      }
+
+      .top-links a {
+        font-size: 0.72rem;
+        letter-spacing: 0.12em;
+      }
+
+      h1 {
+        font-size: 2.6rem;
+      }
+
+      .tagline {
+        font-size: 1.2rem;
       }
 
       /* Simplify demo table */
@@ -855,17 +969,17 @@
         </a>
       </div>
     </div>
-    <p class="tagline">Let users generate their own features in your app without waiting for your backlog to clear.
+    <p class="tagline reveal" style="--delay: 40ms;">Let users generate their own features in your app without waiting for your backlog to clear.
       <br>
       <br>
       It's like having a forward-deployed engineer for every user. Users ask for what they need, agents build it
       instantly.
     </p>
 
-    <p class="early-access">⚠️ <strong>Early Access</strong>: n.codes is in active development. Star ⭐️ to follow along!
+    <p class="early-access reveal" style="--delay: 80ms;">⚠️ <strong>Early Access</strong>: n.codes is in active development. Star ⭐️ to follow along!
     </p>
 
-    <div class="cta-row">
+    <div class="cta-row reveal" style="--delay: 120ms;">
       <a href="/demo/" class="demo-cta">
         Try it out
         <span class="demo-cta-arrow">&rarr;</span>
@@ -875,7 +989,7 @@
       </a>
     </div>
 
-    <div class="changelog-teaser">
+    <div class="changelog-teaser reveal" style="--delay: 160ms;">
       <div class="changelog-meta">
         <div class="changelog-pill">Changelog</div>
         <div class="changelog-date">Feb 1, 2026</div>
@@ -913,10 +1027,26 @@
     <p>n.codes is an open source project that lets users build the UI they need with just a prompt—inside your app. It's
       agentic UI, tightly integrated with your backend APIs, keeping a consistent style.</p>
 
-    <blockquote>It's like a forward-deployed engineer for every user or Claude Code that lives in your app. Users ask
+    <blockquote class="reveal" style="--delay: 120ms;">It's like a forward-deployed engineer for every user or Claude Code that lives in your app. Users ask
       what they need, and they get it right there, right now.</blockquote>
+    <h2>Who It's For</h2>
+    <ul class="reveal" style="--delay: 80ms;">
+      <li>
+        Dev teams constantly overwhelmed by customization requests — Reduce backlog pressure by turning repeat asks
+        into safe, on-demand UIs users can build themselves.
+        <a href="https://blog.n.codes/the-feature-request-bottleneck-why-i-built-n-codes/" target="_blank" rel="noopener">Read more</a>
+      </li>
+      <li>
+        Sales engineers — Close deals faster by proving your product can handle bespoke workflows without custom builds.
+        <a href="https://blog.n.codes/the-competitive-advantage-hidden-in-your-product-how-sales-engineers-win-deals-with-n-codes/" target="_blank" rel="noopener">Read more</a>
+      </li>
+      <li>
+        Customer success — Solve high‑value customer problems immediately, not after the next sprint.
+        <a href="https://blog.n.codes/stop-telling-your-best-customers-well-get-back-to-you-how-n-codes-lets-you-solve-problems-today/" target="_blank" rel="noopener">Read more</a>
+      </li>
+    </ul>
     <h2>How It Works</h2>
-    <div class="section-box">
+    <div class="section-box reveal" style="--delay: 80ms;">
 
 
       <div class="diagram">
@@ -1041,7 +1171,7 @@
         admins.</li>
     </ul>
 
-    <div class="section-box" style="text-align: center; margin-top: 64px;">
+    <div class="section-box reveal" style="text-align: center; margin-top: 64px; --delay: 140ms;">
       <h2 style="justify-content: center;">Stay in the Loop</h2>
       <p style="margin-bottom: 24px;">Get updates on new releases, capability map improvements, and early access features.</p>
       <a href="http://blog.n.codes/#/portal/signup" target="_blank" rel="noopener" class="demo-cta" id="subscribe-cta">
@@ -1050,11 +1180,11 @@
       </a>
     </div>
 
-    <div class="divider"></div>
+    <div class="divider reveal" style="--delay: 120ms;"></div>
 
     <p>It's for the 80% of apps that are just different arrangements of the same building blocks.</p>
 
-    <footer>
+    <footer class="reveal" style="--delay: 140ms;">
       <a href="https://github.com/yungookim/n.codes" target="_blank">GitHub</a>
       <br>
       <a href="https://x.com/dygk_0x1" target="_blank">DM me on X</a>
