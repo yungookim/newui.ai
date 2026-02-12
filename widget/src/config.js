@@ -4,7 +4,6 @@
 
 const DEFAULTS = {
   user: null,
-  capabilityMapUrl: '/n.codes.capabilities.json',
   apiUrl: '/api/generate',
   provider: 'openai',
   model: 'gpt-5-mini',

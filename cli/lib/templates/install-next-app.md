@@ -22,17 +22,7 @@ npm install @ncodes/widget
 
 **Verify:** `node_modules/@ncodes/widget` directory exists.
 
-## Step 2: Copy capability map to public/
-
-**Action:** Copy the JSON capability map to the public directory so it's accessible at runtime.
-
-```bash
-cp {{capabilityMapPath}} public/n.codes.capabilities.json
-```
-
-**Verify:** `public/n.codes.capabilities.json` exists and is valid JSON.
-
-## Step 3: Create the n.codes widget component
+## Step 2: Create the n.codes widget component
 
 **File:** `app/components/NCodesWidget.tsx` (create new file)
 **Action:** Create a client component that initializes the widget.
@@ -51,7 +41,6 @@ export default function NCodesWidget({ user }: { user: { id: string; name: strin
       NCodes = mod;
       NCodes.init({
         user,
-        capabilityMapUrl: '/n.codes.capabilities.json',
         mode: 'simulation',
         theme: 'auto',
       });
@@ -68,7 +57,7 @@ export default function NCodesWidget({ user }: { user: { id: string; name: strin
 
 **Verify:** File exists at `app/components/NCodesWidget.tsx`.
 
-## Step 4: Add widget to root layout
+## Step 3: Add widget to root layout
 
 **File:** `app/layout.tsx`
 **Action:** Import and render the NCodesWidget component inside the `<body>`, passing the current user. Adapt the user retrieval to your auth system.

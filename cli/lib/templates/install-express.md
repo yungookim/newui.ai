@@ -22,16 +22,15 @@ npm install @ncodes/widget
 
 **Verify:** `node_modules/@ncodes/widget` directory exists.
 
-## Step 2: Copy capability map and widget to public/
+## Step 2: Copy widget to public/
 
-**Action:** Copy the JSON capability map and widget script to your static files directory.
+**Action:** Copy the widget script to your static files directory.
 
 ```bash
-cp {{capabilityMapPath}} public/n.codes.capabilities.json
 cp node_modules/@ncodes/widget/dist/ncodes-widget.js public/ncodes-widget.js
 ```
 
-**Verify:** Both files exist in `public/`.
+**Verify:** `public/ncodes-widget.js` exists.
 
 ## Step 3: Serve static files (if not already)
 
@@ -55,7 +54,6 @@ For EJS:
 <script>
   NCodes.init({
     user: <%-  JSON.stringify(user || null) %>,
-    capabilityMapUrl: '/n.codes.capabilities.json',
     mode: 'simulation',
     theme: 'auto',
   });
@@ -69,7 +67,6 @@ For static HTML:
   // Replace with your actual auth state
   NCodes.init({
     user: { id: 'demo', name: 'Demo User' },
-    capabilityMapUrl: '/n.codes.capabilities.json',
     mode: 'simulation',
     theme: 'auto',
   });

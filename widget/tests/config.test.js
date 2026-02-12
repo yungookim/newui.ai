@@ -81,7 +81,6 @@ describe('config', () => {
   describe('DEFAULTS', () => {
     it('has expected keys', () => {
       assert.ok('user' in DEFAULTS);
-      assert.ok('capabilityMapUrl' in DEFAULTS);
       assert.ok('apiUrl' in DEFAULTS);
       assert.ok('provider' in DEFAULTS);
       assert.ok('model' in DEFAULTS);
@@ -98,7 +97,6 @@ describe('config', () => {
       assert.equal(DEFAULTS.user, null);
       assert.equal(DEFAULTS.mode, 'simulation');
       assert.equal(DEFAULTS.theme, 'dark');
-      assert.equal(DEFAULTS.capabilityMapUrl, '/n.codes.capabilities.json');
       assert.equal(DEFAULTS.apiUrl, '/api/generate');
       assert.equal(DEFAULTS.provider, 'openai');
       assert.equal(DEFAULTS.model, 'gpt-5-mini');

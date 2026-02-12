@@ -19,12 +19,10 @@ const {
   showPromptView,
   getResultContainer,
   updateHistoryList,
-  updateQuickPrompts,
 } = require('./panel');
 const { findTemplate, getTemplateHTML, STATUS_MESSAGES } = require('./simulation');
 const { renderGeneratedUI, clearRenderedUI } = require('./renderer');
 const { getHistory, addToHistory, removeFromHistory } = require('./history');
-const { fetchCapabilityMap, generateQuickPrompts, matchCapability } = require('./capability-map');
 const { validateDSL } = require('../../shared/dsl-types');
 const { renderDSL, getDSLStyles } = require('./components/index');
 const { callGenerateAPI, GenerateError } = require('./api-client');
@@ -90,7 +88,6 @@ function init(userConfig) {
     panel,
     mounted: true,
     isGenerating: false,
-    capabilityMap: null,
   };
 
   // Wire up panel event listeners
@@ -99,18 +96,6 @@ function init(userConfig) {
   // Load history on init
   refreshHistoryList();
 
-  // Fetch capability map in background (non-blocking)
-  fetchCapabilityMap(config.capabilityMapUrl).then((capMap) => {
-    if (!_state || !_state.mounted) return;
-    _state.capabilityMap = capMap;
-
-    // If cap map loaded and no static quick prompts configured, generate from capabilities
-    if (capMap && config.quickPrompts.length === 0) {
-      const prompts = generateQuickPrompts(capMap);
-      updateQuickPrompts(_state.panel, prompts);
-      wireQuickPromptClicks();
-    }
-  });
 }
 
 function wireEvents() {
@@ -177,26 +162,10 @@ function wireQuickPromptClicks() {
 }
 
 /**
- * Select a template for the prompt. When the capability map is available,
- * uses capability matching to find relevant context. Falls back to
- * simulation keyword matching when no cap map or no capability match.
+ * Select a template for the prompt using simulation keyword matching.
  */
-function selectTemplate(prompt, capabilityMap) {
-  // First: always try simulation keyword matching (it handles known demo keywords)
-  const keywordMatch = findTemplate(prompt);
-
-  // If no capability map, use simulation only
-  if (!capabilityMap) return keywordMatch;
-
-  // Try capability-aware matching
-  const capMatch = matchCapability(prompt, capabilityMap);
-  if (!capMatch) return keywordMatch;
-
-  // Capability matched — map to best available template based on type
-  // Queries (read data) → data table (invoices), Actions (write) → invoices (until forms exist)
-  // Simulation keywords still take priority when they match non-default templates
-  if (keywordMatch !== 'invoices') return keywordMatch; // dashboard/archive matched by keyword
-  return 'invoices'; // capability-matched but no specific template yet — data table is best default
+function selectTemplate(prompt) {
+  return findTemplate(prompt);
 }
 
 function handleEscapeKey(e) {
@@ -292,7 +261,7 @@ async function handleGenerate() {
   }
 
   const { config } = _state;
-  const isLive = config.mode === 'live' && _state.capabilityMap;
+  const isLive = config.mode === 'live';
 
   if (isLive) {
     await handleGenerateLive(prompt, generateBtn, textarea);
@@ -313,10 +282,9 @@ async function handleGenerateLive(prompt, generateBtn, textarea) {
   showLoadingState();
 
   try {
-    const { config, capabilityMap } = _state;
+    const { config } = _state;
     const result = await callGenerateAPI(config.apiUrl, {
       prompt,
-      capabilityMap,
       provider: config.provider,
       model: config.model,
     });
@@ -354,7 +322,7 @@ async function handleGenerateLive(prompt, generateBtn, textarea) {
 async function handleGenerateSimulation(prompt, generateBtn, textarea) {
   await animateStatus();
 
-  const templateId = selectTemplate(prompt, _state.capabilityMap);
+  const templateId = selectTemplate(prompt);
   const html = getTemplateHTML(templateId);
 
   addToHistory({ prompt, templateId });

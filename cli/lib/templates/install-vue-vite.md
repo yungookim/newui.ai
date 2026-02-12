@@ -22,17 +22,7 @@ npm install @ncodes/widget
 
 **Verify:** `node_modules/@ncodes/widget` directory exists.
 
-## Step 2: Copy capability map to public/
-
-**Action:** Copy the JSON capability map to the public directory.
-
-```bash
-cp {{capabilityMapPath}} public/n.codes.capabilities.json
-```
-
-**Verify:** `public/n.codes.capabilities.json` exists and is valid JSON.
-
-## Step 3: Create the n.codes plugin
+## Step 2: Create the n.codes plugin
 
 **File:** `src/plugins/ncodes.js` (create new file)
 **Action:** Create a Vue plugin that initializes the widget on mount.
@@ -51,7 +41,6 @@ export default {
           if (user) {
             NCodes.init({
               user,
-              capabilityMapUrl: '/n.codes.capabilities.json',
               mode: 'simulation',
               theme: 'auto',
             });
@@ -71,7 +60,7 @@ export default {
 
 **Verify:** File exists at `src/plugins/ncodes.js`.
 
-## Step 4: Register the plugin
+## Step 3: Register the plugin
 
 **File:** `src/main.js` (or `src/main.ts`)
 **Action:** Import and use the n.codes plugin.

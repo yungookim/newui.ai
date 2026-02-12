@@ -20,6 +20,8 @@ The server listens on `http://localhost:3001` by default.
 - `APP_ORIGIN` (optional): Comma-separated allowed origins for CORS.
 - `MAIN_APP_ORIGIN` (optional): Alternate CORS origin env var.
 - `CORS_ORIGIN` (optional): Alternate CORS origin env var.
+- `CAPABILITY_MAP_PATH` (optional): Absolute or relative path to `n.codes.capabilities.json`.
+  Defaults to `../n.codes.capabilities.json` (project root).
 
 **Endpoints**
 - `POST /api/generate` (batch)

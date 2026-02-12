@@ -31,17 +31,7 @@ Copy `ncodes-widget.js` from the n.codes CLI distribution to your web-accessible
 
 **Verify:** The widget script file is accessible from your web server.
 
-## Step 2: Copy capability map
-
-**Action:** Copy the JSON capability map to your web-accessible directory.
-
-```bash
-cp {{capabilityMapPath}} public/n.codes.capabilities.json
-```
-
-**Verify:** `n.codes.capabilities.json` is accessible via HTTP (e.g., `http://localhost:PORT/n.codes.capabilities.json`).
-
-## Step 3: Add script tag to your HTML
+## Step 2: Add script tag to your HTML
 
 **File:** Your main HTML file (e.g., `index.html`)
 **Action:** Add the widget script and initialization before `</body>`.
@@ -54,7 +44,6 @@ cp {{capabilityMapPath}} public/n.codes.capabilities.json
 
   NCodes.init({
     user: user,
-    capabilityMapUrl: '/n.codes.capabilities.json',
     mode: 'simulation',
     theme: 'auto',
   });

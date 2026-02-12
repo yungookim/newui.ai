@@ -22,17 +22,7 @@ npm install @ncodes/widget
 
 **Verify:** `node_modules/@ncodes/widget` directory exists.
 
-## Step 2: Copy capability map to static/
-
-**Action:** Copy the JSON capability map to the static directory (SvelteKit uses `static/` instead of `public/`).
-
-```bash
-cp {{capabilityMapPath}} static/n.codes.capabilities.json
-```
-
-**Verify:** `static/n.codes.capabilities.json` exists and is valid JSON.
-
-## Step 3: Add widget to root layout
+## Step 2: Add widget to root layout
 
 **File:** `src/routes/+layout.svelte`
 **Action:** Import and initialize the widget in the root layout using `onMount`.
@@ -51,7 +41,6 @@ cp {{capabilityMapPath}} static/n.codes.capabilities.json
     if (user) {
       NCodes.init({
         user,
-        capabilityMapUrl: '/n.codes.capabilities.json',
         mode: 'simulation',
         theme: 'auto',
       });

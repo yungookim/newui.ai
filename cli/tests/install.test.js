@@ -94,7 +94,7 @@ test('runInstall replaces template variables', () => {
   const content = fs.readFileSync(result.outputPath, 'utf8');
   assert.ok(!content.includes('{{'));
   assert.ok(!content.includes('}}'));
-  assert.ok(content.includes('n.codes.capabilities.json'));
+  assert.ok(content.includes('NCodes.init'));
 });
 
 test('runInstall returns framework and output path', () => {
@@ -118,7 +118,7 @@ test('runInstall generates INSTALL.md for SvelteKit', () => {
 
   assert.equal(result.framework, 'sveltekit');
   const content = fs.readFileSync(result.outputPath, 'utf8');
-  assert.ok(content.includes('static/n.codes.capabilities.json'));
+  assert.ok(content.includes('+layout.svelte'));
 });
 
 test('runInstall generates INSTALL.md for Next.js Pages Router', () => {

@@ -22,17 +22,7 @@ npm install @ncodes/widget
 
 **Verify:** `node_modules/@ncodes/widget` directory exists.
 
-## Step 2: Copy capability map to public/
-
-**Action:** Copy the JSON capability map to the public directory.
-
-```bash
-cp {{capabilityMapPath}} public/n.codes.capabilities.json
-```
-
-**Verify:** `public/n.codes.capabilities.json` exists and is valid JSON.
-
-## Step 3: Add widget initialization to _app
+## Step 2: Add widget initialization to _app
 
 **File:** `pages/_app.tsx` (or `pages/_app.jsx`)
 **Action:** Add a `useEffect` hook to initialize the n.codes widget with the current user.
@@ -52,7 +42,6 @@ useEffect(() => {
     NCodes = mod;
     NCodes.init({
       user,
-      capabilityMapUrl: '/n.codes.capabilities.json',
       mode: 'simulation',
       theme: 'auto',
     });

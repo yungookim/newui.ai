@@ -1,4 +1,5 @@
 const { generateUI, streamGenerateUI, ApiKeyError, ProviderError, assertApiKey, getModelConfig, createModel, DEFAULT_MAX_TOKENS, DEFAULT_TEMPERATURE } = require('../lib/llm-client');
+const { loadCapabilityMap } = require('../lib/capability-map');
 const { buildSystemPrompt } = require('../lib/prompt-builder');
 const { parseDSLResponse, DSLValidationError } = require('../lib/response-parser');
 
@@ -6,10 +7,10 @@ const MAX_PROMPT_LENGTH = 2000;
 
 /**
  * Validate request body common to both batch and stream paths.
- * Returns { prompt, capabilityMap, provider, model, options } or writes error response.
+ * Returns { prompt, provider, model, options } or writes error response.
  */
 function validateRequest(req, res) {
-  const { prompt, capabilityMap, provider, model, options = {} } = req.body;
+  const { prompt, provider, model, options = {} } = req.body;
 
   if (!prompt || !provider || !model) {
     res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -23,7 +24,7 @@ function validateRequest(req, res) {
     return null;
   }
 
-  return { prompt, capabilityMap, provider, model, options };
+  return { prompt, provider, model, options };
 }
 
 /**
@@ -40,7 +41,7 @@ function sendSSE(res, event, data) {
  * POST /api/generate (batch mode)
  *
  * Request body:
- *   { prompt, capabilityMap, provider, model, options: { maxTokens } }
+ *   { prompt, provider, model, options: { maxTokens } }
  *
  * Response:
  *   { dsl, reasoning, tokensUsed }
@@ -50,7 +51,8 @@ async function handleGenerate(req, res) {
     const params = validateRequest(req, res);
     if (!params) return;
 
-    const { prompt, capabilityMap, provider, model, options } = params;
+    const { prompt, provider, model, options } = params;
+    const capabilityMap = loadCapabilityMap();
     const systemPrompt = buildSystemPrompt(capabilityMap || null);
 
     const { text, tokensUsed } = await generateUI({
@@ -77,7 +79,7 @@ async function handleGenerate(req, res) {
  * POST /api/generate/stream (SSE streaming mode)
  *
  * Request body:
- *   { prompt, capabilityMap, provider, model, options: { maxTokens } }
+ *   { prompt, provider, model, options: { maxTokens } }
  *
  * SSE events:
  *   event: chunk   data: { text: "partial..." }
@@ -91,13 +93,14 @@ async function handleStreamGenerate(req, res) {
     const params = validateRequest(req, res);
     if (!params) return;
 
-    const { prompt, capabilityMap, provider, model, options } = params;
+    const { prompt, provider, model, options } = params;
     const maxTokens = options.maxTokens || DEFAULT_MAX_TOKENS;
 
     // Validate config before starting SSE (errors here return JSON)
     assertApiKey(provider);
     getModelConfig(provider, model);
 
+    const capabilityMap = loadCapabilityMap();
     const systemPrompt = buildSystemPrompt(capabilityMap || null);
     const llmModel = await createModel(provider, model);
 

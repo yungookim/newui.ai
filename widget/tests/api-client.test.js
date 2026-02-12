@@ -61,7 +61,6 @@ function mockFetchSlow() {
 
 const VALID_BODY = {
   prompt: 'Show tasks',
-  capabilityMap: { project: 'test', entities: { task: {} } },
   provider: 'openai',
   model: 'gpt-5-mini',
 };

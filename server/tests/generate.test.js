@@ -100,19 +100,17 @@ describe('validateRequest', () => {
     assert.ok(result);
   });
 
-  it('includes capabilityMap and options when provided', () => {
+  it('includes options when provided', () => {
     const req = {
       body: {
         prompt: 'test',
         provider: 'openai',
         model: 'gpt-5-mini',
-        capabilityMap: { project: 'test' },
         options: { maxTokens: 1024 }
       }
     };
     const res = createMockRes();
     const result = validateRequest(req, res);
-    assert.deepEqual(result.capabilityMap, { project: 'test' });
     assert.equal(result.options.maxTokens, 1024);
   });
 

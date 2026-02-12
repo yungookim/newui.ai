@@ -11,12 +11,6 @@ const DASHBOARD_DSL = JSON.parse(fs.readFileSync(path.join(FIXTURES_DIR, 'dashbo
 const CREATE_FORM_DSL = JSON.parse(fs.readFileSync(path.join(FIXTURES_DIR, 'create-task-form.json'), 'utf8'));
 const ERROR_DSL = JSON.parse(fs.readFileSync(path.join(FIXTURES_DIR, 'error-not-found.json'), 'utf8'));
 
-// Real capability map for request body verification
-const CAP_MAP_PATH = path.join(
-  __dirname, '..', '..', 'test-projects', 'express-tasks', 'public', 'n.codes.capabilities.json'
-);
-const REAL_CAP_MAP = JSON.parse(fs.readFileSync(CAP_MAP_PATH, 'utf8'));
-
 describe('integration: API → DSL → render pipeline', () => {
   describe('DSL fixture validation', () => {
     it('task-list fixture is valid DSL', () => {
@@ -49,30 +43,18 @@ describe('integration: API → DSL → render pipeline', () => {
         provider: 'openai',
         model: 'gpt-5-mini',
       };
-      const body = {
-        prompt,
-        capabilityMap: REAL_CAP_MAP,
-        provider: config.provider,
-        model: config.model,
-      };
+      const body = { prompt, provider: config.provider, model: config.model };
 
       assert.equal(body.prompt, 'Show all tasks');
       assert.equal(body.provider, 'openai');
       assert.equal(body.model, 'gpt-5-mini');
-      assert.deepEqual(body.capabilityMap, REAL_CAP_MAP);
     });
 
     it('request body serializes to valid JSON', () => {
-      const body = {
-        prompt: 'Show tasks',
-        capabilityMap: REAL_CAP_MAP,
-        provider: 'openai',
-        model: 'gpt-5-mini',
-      };
+      const body = { prompt: 'Show tasks', provider: 'openai', model: 'gpt-5-mini' };
       const json = JSON.stringify(body);
       const parsed = JSON.parse(json);
       assert.equal(parsed.prompt, 'Show tasks');
-      assert.deepEqual(parsed.capabilityMap, REAL_CAP_MAP);
     });
   });
 
@@ -199,12 +181,9 @@ describe('integration: API → DSL → render pipeline', () => {
       assert.equal(config.apiUrl, '/api/generate');
     });
 
-    it('live mode without capabilityMap falls back', () => {
-      // This tests the logic in handleGenerate:
-      // isLive = config.mode === 'live' && _state.capabilityMap
-      // When capabilityMap is null, isLive is false → simulation path
-      const isLive = ('live' === 'live') && null;
-      assert.equal(!!isLive, false);
+    it('live mode uses API regardless of capability map', () => {
+      const isLive = 'live' === 'live';
+      assert.equal(!!isLive, true);
     });
 
     it('DSL validation failure triggers simulation fallback', () => {

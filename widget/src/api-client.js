@@ -11,7 +11,7 @@ const BASE_DELAY = 1000;
  * Call POST /api/generate with retry and timeout logic.
  *
  * @param {string} apiUrl - API endpoint URL
- * @param {object} body - Request body { prompt, capabilityMap, provider, model }
+ * @param {object} body - Request body { prompt, provider, model }
  * @param {object} [options]
  * @param {number} [options.timeout] - Request timeout in ms (default 30000)
  * @param {number} [options.maxRetries] - Max retries (default 3)
