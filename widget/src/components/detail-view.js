@@ -1,7 +1,12 @@
 'use strict';
 
+const { createDataClient } = require('../data-client');
+const { createLoadingElement, createErrorElement, hasLiveQuery } = require('./ui-states');
+
 /**
  * Renders a detail-view component — key-value pairs for a single entity.
+ * Supports live query binding: if node.query + node.resolved exist,
+ * fetches data and maps response keys to field values.
  * @param {object} node - DSL detail-view node
  * @returns {HTMLElement}
  */
@@ -16,10 +21,49 @@ function renderDetailView(node) {
     wrapper.appendChild(h);
   }
 
+  if (hasLiveQuery(node)) {
+    wrapper.appendChild(createLoadingElement());
+    fetchAndRenderDetail(wrapper, node);
+  } else {
+    wrapper.appendChild(buildDetailList(node.fields || []));
+  }
+
+  return wrapper;
+}
+
+/**
+ * Fetch data from the resolved endpoint and render the detail list.
+ */
+async function fetchAndRenderDetail(wrapper, node) {
+  const loading = wrapper.querySelector('.ncodes-dsl-loading');
+  try {
+    const client = createDataClient();
+    const data = await client.executeQuery(node.resolved, node.query);
+    if (loading) loading.remove();
+
+    const fields = node.fields || [];
+    if (data && typeof data === 'object') {
+      const populated = fields.map((field) => ({
+        ...field,
+        value: data[field.key] != null ? data[field.key] : field.value,
+      }));
+      wrapper.appendChild(buildDetailList(populated));
+    } else {
+      wrapper.appendChild(buildDetailList(fields));
+    }
+  } catch (err) {
+    if (loading) loading.remove();
+    wrapper.appendChild(createErrorElement(err.message));
+  }
+}
+
+/**
+ * Build the definition list from fields array.
+ */
+function buildDetailList(fields) {
   const dl = document.createElement('dl');
   dl.className = 'ncodes-dsl-detail-list';
 
-  const fields = node.fields || [];
   for (const field of fields) {
     const dt = document.createElement('dt');
     dt.textContent = field.label || field.key;
@@ -44,8 +88,7 @@ function renderDetailView(node) {
     dl.appendChild(dd);
   }
 
-  wrapper.appendChild(dl);
-  return wrapper;
+  return dl;
 }
 
 module.exports = { renderDetailView };

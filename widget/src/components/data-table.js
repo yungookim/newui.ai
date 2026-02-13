@@ -1,7 +1,12 @@
 'use strict';
 
+const { createDataClient } = require('../data-client');
+const { createLoadingElement, createErrorElement, hasLiveQuery } = require('./ui-states');
+
 /**
  * Renders a data-table component — tabular data with columns and rows.
+ * Supports live query binding: if node.query + node.resolved exist,
+ * fetches data from the resolved endpoint on render.
  * @param {object} node - DSL data-table node
  * @returns {HTMLElement}
  */
@@ -16,13 +21,51 @@ function renderDataTable(node) {
     wrapper.appendChild(h);
   }
 
+  if (hasLiveQuery(node)) {
+    wrapper.appendChild(createLoadingElement());
+    fetchAndRenderTable(wrapper, node);
+  } else {
+    wrapper.appendChild(buildTable(node.columns || [], node.rows || []));
+  }
+
+  return wrapper;
+}
+
+/**
+ * Fetch data from the resolved endpoint and render the table.
+ */
+async function fetchAndRenderTable(wrapper, node) {
+  const loading = wrapper.querySelector('.ncodes-dsl-loading');
+  try {
+    const client = createDataClient();
+    const data = await client.executeQuery(node.resolved, node.query);
+    if (loading) loading.remove();
+
+    const rows = Array.isArray(data) ? data : [];
+    if (rows.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'ncodes-dsl-inline-empty';
+      empty.textContent = 'No data found.';
+      wrapper.appendChild(empty);
+    } else {
+      wrapper.appendChild(buildTable(node.columns || [], rows));
+    }
+  } catch (err) {
+    if (loading) loading.remove();
+    wrapper.appendChild(createErrorElement(err.message));
+  }
+}
+
+/**
+ * Build the table element from columns and rows arrays.
+ */
+function buildTable(columns, rows) {
   const table = document.createElement('table');
   table.className = 'data-table ncodes-dsl-data-table';
 
   // Header
   const thead = document.createElement('thead');
   const headerRow = document.createElement('tr');
-  const columns = node.columns || [];
   for (const col of columns) {
     const th = document.createElement('th');
     th.textContent = col.label || col.key;
@@ -33,7 +76,6 @@ function renderDataTable(node) {
 
   // Body
   const tbody = document.createElement('tbody');
-  const rows = node.rows || [];
   for (const row of rows) {
     const tr = document.createElement('tr');
     for (const col of columns) {
@@ -53,9 +95,8 @@ function renderDataTable(node) {
     tbody.appendChild(tr);
   }
   table.appendChild(tbody);
-  wrapper.appendChild(table);
 
-  return wrapper;
+  return table;
 }
 
 module.exports = { renderDataTable };

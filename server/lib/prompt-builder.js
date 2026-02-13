@@ -47,20 +47,26 @@ function formatCapabilityContext(capabilityMap) {
     sections.push(`Application: ${capabilityMap.project}`);
   }
 
-  // Merge actions + queries into a single API routes section
-  const allEndpoints = [];
-  for (const [name, val] of Object.entries(capabilityMap.actions || {})) {
-    const parts = [`  - ${val.endpoint || name}`];
-    if (val.description) parts.push(`    ${val.description}`);
-    allEndpoints.push(parts.join('\n'));
+  // Queries section — ref name + endpoint
+  const queryEntries = Object.entries(capabilityMap.queries || {});
+  if (queryEntries.length > 0) {
+    const lines = queryEntries.map(([name, val]) => {
+      const parts = [`  - ref: "${name}" → ${val.endpoint || name}`];
+      if (val.description) parts.push(`    ${val.description}`);
+      return parts.join('\n');
+    });
+    sections.push(`Available Queries (use these ref names in query.ref):\n${lines.join('\n')}`);
   }
-  for (const [name, val] of Object.entries(capabilityMap.queries || {})) {
-    const parts = [`  - ${val.endpoint || name}`];
-    if (val.description) parts.push(`    ${val.description}`);
-    allEndpoints.push(parts.join('\n'));
-  }
-  if (allEndpoints.length > 0) {
-    sections.push(`Available API Routes:\n${allEndpoints.join('\n')}`);
+
+  // Actions section — ref name + endpoint
+  const actionEntries = Object.entries(capabilityMap.actions || {});
+  if (actionEntries.length > 0) {
+    const lines = actionEntries.map(([name, val]) => {
+      const parts = [`  - ref: "${name}" → ${val.endpoint || name}`];
+      if (val.description) parts.push(`    ${val.description}`);
+      return parts.join('\n');
+    });
+    sections.push(`Available Actions (use these ref names in action.ref):\n${lines.join('\n')}`);
   }
 
   // Entities as object map: { name: { fields, description } }
@@ -136,14 +142,54 @@ Available component types and their required properties:
 - **empty-state**: No data placeholder. Required: message. Optional: icon, action ({label, href?})
 - **error**: Error display. Required: message. Optional: code, details, retry
 
+## Live Data Binding
+
+When a capability map is available, you SHOULD use **query** and **action** bindings instead of static data. This connects the UI to real API endpoints.
+
+### Query binding (for data-table, detail-view, summary-cards, chart, list)
+Add a "query" object with a "ref" that matches a query name from the capability map:
+\`\`\`json
+{
+  "type": "data-table",
+  "title": "All Tasks",
+  "columns": [{"key": "title", "label": "Title"}, {"key": "status", "label": "Status", "type": "badge"}],
+  "query": { "ref": "listTasks", "params": {}, "responsePath": "" }
+}
+\`\`\`
+- "ref" MUST be the exact query name from the capability map (e.g., "listTasks", NOT "GET /tasks")
+- "params" is optional — key-value pairs sent as query params (for GET) or body (for POST)
+- "responsePath" is optional — dot-notation path to extract data from the response (e.g., "data.items")
+- When using query binding, the static data prop (rows, fields, cards, items, labels+datasets) is OPTIONAL — leave it out and let the widget fetch live data
+
+### Action binding (for form)
+Add an "action" object with a "ref" that matches an action name from the capability map:
+\`\`\`json
+{
+  "type": "form",
+  "title": "Create Task",
+  "fields": [{"name": "title", "label": "Title", "type": "text", "required": true}],
+  "submitLabel": "Create",
+  "action": { "ref": "createTask", "bodyFrom": "form" }
+}
+\`\`\`
+- "ref" MUST be the exact action name from the capability map (e.g., "createTask", NOT "POST /tasks")
+- "bodyFrom": "form" sends form field values as the request body
+- "params" is optional — extra params merged with form data
+- "responsePath" is optional — path to extract from response
+
+### CRITICAL: ref names must match capability map keys exactly
+- Use query ref names like "listTasks", "listUsers", "getTask"
+- Use action ref names like "createTask", "updateTask", "deleteTask"
+- Do NOT use endpoint URLs like "GET /tasks" as ref values
+
 ## Rules
 
 1. ALWAYS output a root "page" component with "type": "page", "title", and "children"
-2. Use realistic, contextual data based on the capability map when available
+2. When a capability map is available, ALWAYS prefer query/action bindings over static data
 3. Choose appropriate component types for the user's request:
-   - Listing/browsing → data-table
-   - Single record → detail-view
-   - Creating/editing → form
+   - Listing/browsing → data-table with query binding
+   - Single record → detail-view with query binding
+   - Creating/editing → form with action binding
    - Overview/metrics → summary-cards + chart
    - No results → empty-state
    - Errors → error
@@ -153,6 +199,7 @@ Available component types and their required properties:
 7. All JSON must be strictly valid — no trailing commas, no comments
 8. In "detail-view" and "summary-cards", "value" fields MUST be primitives (string, number, boolean, or null) — NEVER objects or arrays
 9. In "data-table", all row cell values MUST be flat primitives (string, number, boolean, or null) — NEVER nested objects or arrays
+10. Query and action ref values MUST be capability map key names (e.g., "listTasks"), NEVER endpoint URLs (e.g., "GET /tasks")
 ${capabilityContext ? `\n## Application Context\n\n${capabilityContext}\n` : ''}
 ## Examples
 

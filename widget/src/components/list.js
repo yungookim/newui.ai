@@ -1,7 +1,12 @@
 'use strict';
 
+const { createDataClient } = require('../data-client');
+const { createLoadingElement, createErrorElement, hasLiveQuery } = require('./ui-states');
+
 /**
  * Renders a list component — ordered or unordered list of items.
+ * Supports live query binding: if node.query + node.resolved exist,
+ * fetches items from the resolved endpoint.
  * @param {object} node - DSL list node
  * @returns {HTMLElement}
  */
@@ -16,10 +21,48 @@ function renderList(node) {
     wrapper.appendChild(h);
   }
 
-  const listEl = document.createElement(node.ordered ? 'ol' : 'ul');
+  if (hasLiveQuery(node)) {
+    wrapper.appendChild(createLoadingElement());
+    fetchAndRenderList(wrapper, node);
+  } else {
+    wrapper.appendChild(buildListElement(node.ordered, node.items || []));
+  }
+
+  return wrapper;
+}
+
+/**
+ * Fetch data from the resolved endpoint and render the list.
+ */
+async function fetchAndRenderList(wrapper, node) {
+  const loading = wrapper.querySelector('.ncodes-dsl-loading');
+  try {
+    const client = createDataClient();
+    const data = await client.executeQuery(node.resolved, node.query);
+    if (loading) loading.remove();
+
+    const items = Array.isArray(data) ? data : [];
+    if (items.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'ncodes-dsl-inline-empty';
+      empty.textContent = 'No items found.';
+      wrapper.appendChild(empty);
+    } else {
+      wrapper.appendChild(buildListElement(node.ordered, items));
+    }
+  } catch (err) {
+    if (loading) loading.remove();
+    wrapper.appendChild(createErrorElement(err.message));
+  }
+}
+
+/**
+ * Build the list element from items array.
+ */
+function buildListElement(ordered, items) {
+  const listEl = document.createElement(ordered ? 'ol' : 'ul');
   listEl.className = 'ncodes-dsl-list';
 
-  const items = node.items || [];
   for (const item of items) {
     const li = document.createElement('li');
     li.className = 'ncodes-dsl-list-item';
@@ -39,8 +82,7 @@ function renderList(node) {
     listEl.appendChild(li);
   }
 
-  wrapper.appendChild(listEl);
-  return wrapper;
+  return listEl;
 }
 
 module.exports = { renderList };

@@ -9,6 +9,7 @@ const {
 } = require('../api/generate');
 const { ApiKeyError, ProviderError } = require('../lib/llm-client');
 const { DSLValidationError } = require('../lib/response-parser');
+const { CapabilityResolutionError } = require('../lib/capability-resolver');
 
 // --- Mock response helper ---
 
@@ -207,6 +208,26 @@ describe('writeErrorResponse', () => {
     writeErrorResponse(res, new Error('generic'));
     const body = JSON.parse(res.body);
     assert.equal(body.validationErrors, undefined);
+  });
+
+  it('returns 422 for CapabilityResolutionError with resolutionErrors', () => {
+    const res = createMockRes();
+    const errors = [
+      { path: 'root.children[0]', ref: 'badRef', type: 'query', message: 'Unknown query ref "badRef"' }
+    ];
+    writeErrorResponse(res, new CapabilityResolutionError('Capability resolution failed', errors));
+    assert.equal(res.statusCode, 422);
+    const body = JSON.parse(res.body);
+    assert.ok(body.error.includes('Capability resolution failed'));
+    assert.deepEqual(body.resolutionErrors, errors);
+    assert.equal(body.validationErrors, undefined);
+  });
+
+  it('does not include resolutionErrors for non-resolution errors', () => {
+    const res = createMockRes();
+    writeErrorResponse(res, new Error('generic'));
+    const body = JSON.parse(res.body);
+    assert.equal(body.resolutionErrors, undefined);
   });
 });
 

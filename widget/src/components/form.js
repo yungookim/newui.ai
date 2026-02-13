@@ -1,7 +1,17 @@
 'use strict';
 
+const { createDataClient } = require('../data-client');
+const {
+  createLoadingElement,
+  createErrorElement,
+  createSuccessElement,
+  hasLiveAction,
+} = require('./ui-states');
+
 /**
  * Renders a form component — input fields with labels and a submit button.
+ * Supports live action binding: if node.action is an object and node.resolved
+ * exists, submitting the form calls the resolved endpoint.
  * @param {object} node - DSL form node
  * @returns {HTMLElement}
  */
@@ -18,7 +28,6 @@ function renderForm(node) {
 
   const form = document.createElement('form');
   form.className = 'ncodes-dsl-form';
-  form.addEventListener('submit', (e) => e.preventDefault());
 
   const fields = node.fields || [];
   for (const field of fields) {
@@ -79,12 +88,85 @@ function renderForm(node) {
     btn.type = 'submit';
     btn.className = 'ncodes-dsl-submit-btn';
     btn.textContent = node.submitLabel;
-    if (node.action) btn.dataset.action = node.action;
+    // Legacy: string action stored as data attribute
+    if (node.action && typeof node.action === 'string') {
+      btn.dataset.action = node.action;
+    }
     form.appendChild(btn);
+  }
+
+  // Wire up submit handler
+  if (hasLiveAction(node)) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      handleLiveSubmit(form, wrapper, node);
+    });
+  } else {
+    form.addEventListener('submit', (e) => e.preventDefault());
   }
 
   wrapper.appendChild(form);
   return wrapper;
+}
+
+/**
+ * Handle form submission for live action binding.
+ * Collects form data, calls executeAction, shows feedback.
+ */
+async function handleLiveSubmit(form, wrapper, node) {
+  // Validate required fields via native validation
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+
+  // Remove any previous feedback
+  const oldFeedback = wrapper.querySelector('.ncodes-dsl-inline-error, .ncodes-dsl-inline-success');
+  if (oldFeedback) oldFeedback.remove();
+
+  // Disable submit button and show loading text
+  const btn = form.querySelector('.ncodes-dsl-submit-btn');
+  const originalLabel = btn ? btn.textContent : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+  }
+
+  try {
+    const formData = collectFormData(form, node.fields || []);
+    const client = createDataClient();
+    await client.executeAction(node.resolved, node.action, formData);
+
+    // Show success
+    wrapper.appendChild(createSuccessElement('Submitted successfully.'));
+
+    // Reset form
+    form.reset();
+  } catch (err) {
+    wrapper.appendChild(createErrorElement(err.message));
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+    }
+  }
+}
+
+/**
+ * Collect form field values into a plain object.
+ */
+function collectFormData(form, fields) {
+  const data = {};
+  for (const field of fields) {
+    const el = form.elements[field.name];
+    if (!el) continue;
+    if (field.type === 'checkbox') {
+      data[field.name] = el.checked;
+    } else {
+      data[field.name] = el.value;
+    }
+  }
+  return data;
 }
 
 module.exports = { renderForm };

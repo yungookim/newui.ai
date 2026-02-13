@@ -593,6 +593,319 @@ describe('security', () => {
   });
 });
 
+// ─── Live query: data-table with query binding ──────────
+
+describe('data-table with live query', () => {
+  it('renders loading state initially when query + resolved are present', () => {
+    const el = renderComponent({
+      type: 'data-table',
+      title: 'Tasks',
+      columns: [{ key: 'id', label: 'ID' }],
+      query: { ref: 'listTasks' },
+      resolved: { endpoint: { method: 'GET', path: '/api/tasks' } }
+    });
+
+    assert.ok(el);
+    // Should have a loading element
+    const loading = findByClass(el, 'ncodes-dsl-loading');
+    assert.ok(loading, 'should render loading state');
+    assert.equal(loading.textContent, 'Loading...');
+
+    // Title should still render
+    const title = findByClass(el, 'ncodes-dsl-section-title');
+    assert.equal(title.textContent, 'Tasks');
+  });
+
+  it('renders static table when no query is present', () => {
+    const el = renderComponent({
+      type: 'data-table',
+      columns: [{ key: 'id', label: 'ID' }],
+      rows: [{ id: 1 }]
+    });
+
+    assert.ok(el);
+    // Should NOT have loading
+    const loading = findByClass(el, 'ncodes-dsl-loading');
+    assert.equal(loading, null);
+
+    // Should have the table
+    const table = findByClass(el, 'ncodes-dsl-data-table');
+    assert.ok(table);
+  });
+
+  it('renders static table when query is present but resolved is missing', () => {
+    const el = renderComponent({
+      type: 'data-table',
+      columns: [{ key: 'id', label: 'ID' }],
+      rows: [{ id: 1 }],
+      query: { ref: 'listTasks' }
+      // no resolved — should fall back to static rendering
+    });
+
+    assert.ok(el);
+    const loading = findByClass(el, 'ncodes-dsl-loading');
+    assert.equal(loading, null);
+
+    const table = findByClass(el, 'ncodes-dsl-data-table');
+    assert.ok(table);
+  });
+});
+
+// ─── Live query: detail-view with query binding ─────────
+
+describe('detail-view with live query', () => {
+  it('renders loading state when query + resolved are present', () => {
+    const el = renderComponent({
+      type: 'detail-view',
+      title: 'Task Details',
+      query: { ref: 'getTask', params: { id: 1 } },
+      resolved: { endpoint: { method: 'GET', path: '/api/tasks/1' } }
+    });
+
+    assert.ok(el);
+    const loading = findByClass(el, 'ncodes-dsl-loading');
+    assert.ok(loading, 'should render loading state');
+  });
+
+  it('renders static detail when no query is present', () => {
+    const el = renderComponent({
+      type: 'detail-view',
+      fields: [{ key: 'name', label: 'Name', value: 'Alice' }]
+    });
+
+    assert.ok(el);
+    const loading = findByClass(el, 'ncodes-dsl-loading');
+    assert.equal(loading, null);
+
+    const dts = findAllByTag(el, 'dt');
+    assert.equal(dts.length, 1);
+  });
+});
+
+// ─── Live query: list with query binding ─────────────────
+
+describe('list with live query', () => {
+  it('renders loading state when query + resolved are present', () => {
+    const el = renderComponent({
+      type: 'list',
+      title: 'Recent Tasks',
+      query: { ref: 'listTasks' },
+      resolved: { endpoint: { method: 'GET', path: '/api/tasks' } }
+    });
+
+    assert.ok(el);
+    const loading = findByClass(el, 'ncodes-dsl-loading');
+    assert.ok(loading, 'should render loading state');
+  });
+
+  it('renders static list when no query is present', () => {
+    const el = renderComponent({
+      type: 'list',
+      items: [{ text: 'First' }]
+    });
+
+    const loading = findByClass(el, 'ncodes-dsl-loading');
+    assert.equal(loading, null);
+
+    const list = findByClass(el, 'ncodes-dsl-list');
+    assert.ok(list);
+  });
+});
+
+// ─── Live query: summary-cards with query binding ────────
+
+describe('summary-cards with live query', () => {
+  it('renders loading state when query + resolved are present', () => {
+    const el = renderComponent({
+      type: 'summary-cards',
+      title: 'Metrics',
+      query: { ref: 'getStats' },
+      resolved: { endpoint: { method: 'GET', path: '/api/stats' } }
+    });
+
+    assert.ok(el);
+    const loading = findByClass(el, 'ncodes-dsl-loading');
+    assert.ok(loading, 'should render loading state');
+  });
+
+  it('renders static cards when no query is present', () => {
+    const el = renderComponent({
+      type: 'summary-cards',
+      cards: [{ label: 'Total', value: 42 }]
+    });
+
+    const loading = findByClass(el, 'ncodes-dsl-loading');
+    assert.equal(loading, null);
+
+    const grid = findByClass(el, 'ncodes-dsl-summary-grid');
+    assert.ok(grid);
+  });
+});
+
+// ─── Live query: chart with query binding ────────────────
+
+describe('chart with live query', () => {
+  it('renders loading state when query + resolved are present', () => {
+    const el = renderComponent({
+      type: 'chart',
+      title: 'Revenue',
+      chartType: 'bar',
+      query: { ref: 'getChartData' },
+      resolved: { endpoint: { method: 'GET', path: '/api/chart' } }
+    });
+
+    assert.ok(el);
+    const loading = findByClass(el, 'ncodes-dsl-loading');
+    assert.ok(loading, 'should render loading state');
+  });
+
+  it('renders static chart when no query is present', () => {
+    const el = renderComponent({
+      type: 'chart',
+      chartType: 'bar',
+      labels: ['Q1'],
+      datasets: [{ label: 'Sales', data: [100] }]
+    });
+
+    const loading = findByClass(el, 'ncodes-dsl-loading');
+    assert.equal(loading, null);
+
+    const bars = el.querySelectorAll('.ncodes-dsl-chart-bar');
+    assert.equal(bars.length, 1);
+  });
+});
+
+// ─── Live action: form with action binding ───────────────
+
+describe('form with live action binding', () => {
+  it('renders form with submit button but no legacy data-action', () => {
+    const el = renderComponent({
+      type: 'form',
+      title: 'Create Task',
+      fields: [{ name: 'title', label: 'Title', type: 'text' }],
+      submitLabel: 'Create',
+      action: { ref: 'createTask', bodyFrom: 'form' },
+      resolved: { endpoint: { method: 'POST', path: '/api/tasks' } }
+    });
+
+    assert.ok(el);
+    const btn = findByClass(el, 'ncodes-dsl-submit-btn');
+    assert.ok(btn);
+    assert.equal(btn.textContent, 'Create');
+    // Object action should NOT set data-action (that is for legacy string action)
+    assert.equal(btn.dataset.action, undefined);
+  });
+
+  it('wires up submit event listener on the form', () => {
+    const el = renderComponent({
+      type: 'form',
+      fields: [{ name: 'title', label: 'Title', type: 'text' }],
+      submitLabel: 'Create',
+      action: { ref: 'createTask', bodyFrom: 'form' },
+      resolved: { endpoint: { method: 'POST', path: '/api/tasks' } }
+    });
+
+    const form = findByClass(el, 'ncodes-dsl-form');
+    assert.ok(form);
+    // Check that submit event listeners are attached
+    assert.ok(form._eventListeners['submit'], 'should have submit listener');
+    assert.ok(form._eventListeners['submit'].length > 0);
+  });
+
+  it('still sets data-action for legacy string action', () => {
+    const el = renderComponent({
+      type: 'form',
+      fields: [{ name: 'title', label: 'Title', type: 'text' }],
+      submitLabel: 'Create',
+      action: 'legacyAction'
+    });
+
+    const btn = findByClass(el, 'ncodes-dsl-submit-btn');
+    assert.equal(btn.dataset.action, 'legacyAction');
+  });
+
+  it('registers submit handler even without live action', () => {
+    const el = renderComponent({
+      type: 'form',
+      fields: [{ name: 'title', label: 'Title', type: 'text' }],
+      submitLabel: 'Go'
+      // no action binding, no resolved
+    });
+
+    const form = findByClass(el, 'ncodes-dsl-form');
+    assert.ok(form);
+    // Should still have a submit handler (for e.preventDefault())
+    assert.ok(form._eventListeners['submit']);
+    assert.ok(form._eventListeners['submit'].length > 0);
+  });
+});
+
+// ─── Backward compatibility with live data ───────────────
+
+describe('backward compatibility — components without query/action', () => {
+  it('data-table renders normally without query', () => {
+    const el = renderComponent({
+      type: 'data-table',
+      columns: [{ key: 'id', label: 'ID' }, { key: 'name', label: 'Name' }],
+      rows: [{ id: 1, name: 'Alice' }]
+    });
+    const table = findByClass(el, 'ncodes-dsl-data-table');
+    assert.ok(table);
+    const trs = findAllByTag(el, 'tr');
+    assert.equal(trs.length, 2); // header + 1 data row
+  });
+
+  it('detail-view renders normally without query', () => {
+    const el = renderComponent({
+      type: 'detail-view',
+      fields: [{ key: 'name', label: 'Name', value: 'Bob' }]
+    });
+    const dts = findAllByTag(el, 'dt');
+    assert.equal(dts.length, 1);
+    assert.equal(dts[0].textContent, 'Name');
+  });
+
+  it('list renders normally without query', () => {
+    const el = renderComponent({
+      type: 'list',
+      items: [{ text: 'Item 1' }, { text: 'Item 2' }]
+    });
+    const list = findByClass(el, 'ncodes-dsl-list');
+    assert.equal(list.children.length, 2);
+  });
+
+  it('summary-cards renders normally without query', () => {
+    const el = renderComponent({
+      type: 'summary-cards',
+      cards: [{ label: 'Count', value: 10 }]
+    });
+    const grid = findByClass(el, 'ncodes-dsl-summary-grid');
+    assert.ok(grid);
+  });
+
+  it('chart renders normally without query', () => {
+    const el = renderComponent({
+      type: 'chart',
+      chartType: 'bar',
+      labels: ['A'],
+      datasets: [{ label: 'X', data: [10] }]
+    });
+    const bars = el.querySelectorAll('.ncodes-dsl-chart-bar');
+    assert.equal(bars.length, 1);
+  });
+
+  it('form renders normally with string action', () => {
+    const el = renderComponent({
+      type: 'form',
+      fields: [{ name: 'x', label: 'X', type: 'text' }],
+      submitLabel: 'Go',
+      action: 'submit'
+    });
+    const btn = findByClass(el, 'ncodes-dsl-submit-btn');
+    assert.equal(btn.dataset.action, 'submit');
+  });
+});
+
 // ─── Full DSL example ────────────────────────────────────
 
 describe('full DSL rendering', () => {

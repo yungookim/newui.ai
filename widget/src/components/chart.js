@@ -1,8 +1,13 @@
 'use strict';
 
+const { createDataClient } = require('../data-client');
+const { createLoadingElement, createErrorElement, hasLiveQuery } = require('./ui-states');
+
 /**
  * Renders a chart component — simple bar/line/pie visualization using CSS.
  * No external charting library — uses pure DOM/CSS for lightweight rendering.
+ * Supports live query binding: if node.query + node.resolved exist,
+ * fetches data for chart datasets.
  * @param {object} node - DSL chart node
  * @returns {HTMLElement}
  */
@@ -17,10 +22,47 @@ function renderChart(node) {
     wrapper.appendChild(h);
   }
 
-  const chartType = node.chartType || 'bar';
-  const labels = node.labels || [];
-  const datasets = node.datasets || [];
+  if (hasLiveQuery(node)) {
+    wrapper.appendChild(createLoadingElement());
+    fetchAndRenderChart(wrapper, node);
+  } else {
+    buildChartContent(wrapper, node.chartType || 'bar', node.labels || [], node.datasets || []);
+  }
 
+  return wrapper;
+}
+
+/**
+ * Fetch data from the resolved endpoint and render the chart.
+ */
+async function fetchAndRenderChart(wrapper, node) {
+  const loading = wrapper.querySelector('.ncodes-dsl-loading');
+  try {
+    const client = createDataClient();
+    const data = await client.executeQuery(node.resolved, node.query);
+    if (loading) loading.remove();
+
+    // Response may provide labels and datasets, or just datasets
+    const chartType = node.chartType || 'bar';
+    let labels = node.labels || [];
+    let datasets = node.datasets || [];
+
+    if (data && typeof data === 'object') {
+      if (Array.isArray(data.labels)) labels = data.labels;
+      if (Array.isArray(data.datasets)) datasets = data.datasets;
+    }
+
+    buildChartContent(wrapper, chartType, labels, datasets);
+  } catch (err) {
+    if (loading) loading.remove();
+    wrapper.appendChild(createErrorElement(err.message));
+  }
+}
+
+/**
+ * Build chart DOM elements and append to wrapper.
+ */
+function buildChartContent(wrapper, chartType, labels, datasets) {
   if (chartType === 'bar' || chartType === 'line') {
     wrapper.appendChild(renderBarOrLine(chartType, labels, datasets));
   } else if (chartType === 'pie' || chartType === 'doughnut') {
@@ -44,8 +86,6 @@ function renderChart(node) {
     }
     wrapper.appendChild(legend);
   }
-
-  return wrapper;
 }
 
 function renderBarOrLine(chartType, labels, datasets) {

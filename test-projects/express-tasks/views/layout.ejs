@@ -23,7 +23,10 @@
     NCodes.init({
       user: <%- JSON.stringify(currentUser || null) %>,
       capabilityMapUrl: '/n.codes.capabilities.json',
-      mode: 'simulation',
+      apiUrl: 'http://localhost:3001/api/generate',
+      provider: 'openai',
+      model: 'gpt-5.2',
+      mode: 'live',
       theme: 'auto',
     });
   </script>

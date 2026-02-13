@@ -2,6 +2,7 @@ const { generateUI, streamGenerateUI, ApiKeyError, ProviderError, assertApiKey, 
 const { loadCapabilityMap } = require('../lib/capability-map');
 const { buildSystemPrompt } = require('../lib/prompt-builder');
 const { parseDSLResponse, DSLValidationError } = require('../lib/response-parser');
+const { resolveCapabilityRefs, CapabilityResolutionError } = require('../lib/capability-resolver');
 
 const MAX_PROMPT_LENGTH = 2000;
 
@@ -66,7 +67,12 @@ async function handleGenerate(req, res) {
       }
     });
 
-    const { dsl, reasoning } = parseDSLResponse(text);
+    let { dsl, reasoning } = parseDSLResponse(text);
+
+    // Resolve capability refs if a capability map is available
+    if (capabilityMap) {
+      dsl = resolveCapabilityRefs(dsl, capabilityMap);
+    }
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ dsl, reasoning, tokensUsed }));
@@ -143,7 +149,12 @@ async function handleStreamGenerate(req, res) {
     };
 
     // Validate the complete response
-    const { dsl, reasoning } = parseDSLResponse(fullText);
+    let { dsl, reasoning } = parseDSLResponse(fullText);
+
+    // Resolve capability refs if a capability map is available
+    if (capabilityMap) {
+      dsl = resolveCapabilityRefs(dsl, capabilityMap);
+    }
 
     sendSSE(res, 'done', { dsl, reasoning, tokensUsed });
     res.end();
@@ -153,6 +164,8 @@ async function handleStreamGenerate(req, res) {
       const payload = { error: error.message };
       if (error instanceof DSLValidationError) {
         payload.validationErrors = error.errors;
+      } else if (error instanceof CapabilityResolutionError) {
+        payload.resolutionErrors = error.errors;
       }
       sendSSE(res, 'error', payload);
       res.end();
@@ -171,12 +184,17 @@ function writeErrorResponse(res, error) {
   if (error instanceof ApiKeyError) status = 401;
   else if (error instanceof ProviderError) status = 400;
   else if (error instanceof DSLValidationError) status = 422;
+  else if (error instanceof CapabilityResolutionError) status = 422;
+
+  const body = { error: error.message };
+  if (error instanceof DSLValidationError) {
+    body.validationErrors = error.errors;
+  } else if (error instanceof CapabilityResolutionError) {
+    body.resolutionErrors = error.errors;
+  }
 
   res.writeHead(status, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify({
-    error: error.message,
-    ...(error instanceof DSLValidationError && { validationErrors: error.errors })
-  }));
+  res.end(JSON.stringify(body));
 }
 
 module.exports = {

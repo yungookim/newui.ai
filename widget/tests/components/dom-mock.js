@@ -41,6 +41,10 @@ class MockElement {
     return child;
   }
 
+  remove() {
+    // Self-removal — in tests, this is a no-op since we don't track parent references
+  }
+
   insertBefore(newChild, refChild) {
     const idx = this.children.indexOf(refChild);
     if (idx >= 0) {

@@ -647,6 +647,63 @@ function getDSLStyles() {
     .ncodes-dsl-error-retry:hover {
       opacity: 0.9;
     }
+
+    /* ===== Live Data UI States ===== */
+    .ncodes-dsl-loading {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--ncodes-text-dim);
+      padding: 12px 0;
+    }
+
+    .ncodes-dsl-loading::before {
+      content: '';
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--ncodes-border-color);
+      border-top-color: var(--ncodes-accent);
+      border-radius: 50%;
+      animation: ncodes-spin 0.6s linear infinite;
+    }
+
+    @keyframes ncodes-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .ncodes-dsl-inline-error {
+      font-size: 13px;
+      color: var(--ncodes-danger);
+      background: var(--ncodes-danger-dim);
+      border: 1px solid var(--ncodes-danger);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-top: 12px;
+    }
+
+    .ncodes-dsl-inline-success {
+      font-size: 13px;
+      color: var(--ncodes-accent);
+      background: var(--ncodes-accent-dim);
+      border: 1px solid var(--ncodes-accent);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-top: 12px;
+    }
+
+    .ncodes-dsl-inline-empty {
+      font-size: 13px;
+      color: var(--ncodes-text-dim);
+      padding: 20px 0;
+      text-align: center;
+    }
+
+    .ncodes-dsl-submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
   `;
 }
 

@@ -94,15 +94,18 @@ describe('formatCapabilityContext', () => {
     assert.ok(result.includes('createTask'));
   });
 
-  it('merges actions and queries into single routes section', () => {
+  it('formats queries and actions with ref names and endpoints', () => {
     const cap = {
       actions: { createTask: { endpoint: 'POST /tasks', description: 'Create' } },
       queries: { listTasks: { endpoint: 'GET /tasks', description: 'List' } }
     };
     const result = formatCapabilityContext(cap);
-    assert.ok(result.includes('Available API Routes:'));
-    assert.ok(result.includes('POST /tasks'));
+    assert.ok(result.includes('Available Queries'));
+    assert.ok(result.includes('ref: "listTasks"'));
     assert.ok(result.includes('GET /tasks'));
+    assert.ok(result.includes('Available Actions'));
+    assert.ok(result.includes('ref: "createTask"'));
+    assert.ok(result.includes('POST /tasks'));
   });
 
   it('formats entities as object map with fields', () => {

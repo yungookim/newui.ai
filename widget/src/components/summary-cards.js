@@ -1,7 +1,12 @@
 'use strict';
 
+const { createDataClient } = require('../data-client');
+const { createLoadingElement, createErrorElement, hasLiveQuery } = require('./ui-states');
+
 /**
  * Renders a summary-cards component — a grid of metric/stat cards.
+ * Supports live query binding: if node.query + node.resolved exist,
+ * fetches data and populates cards from the response.
  * @param {object} node - DSL summary-cards node
  * @returns {HTMLElement}
  */
@@ -16,10 +21,41 @@ function renderSummaryCards(node) {
     wrapper.appendChild(h);
   }
 
+  if (hasLiveQuery(node)) {
+    wrapper.appendChild(createLoadingElement());
+    fetchAndRenderCards(wrapper, node);
+  } else {
+    wrapper.appendChild(buildCardsGrid(node.cards || []));
+  }
+
+  return wrapper;
+}
+
+/**
+ * Fetch data from the resolved endpoint and render the cards grid.
+ */
+async function fetchAndRenderCards(wrapper, node) {
+  const loading = wrapper.querySelector('.ncodes-dsl-loading');
+  try {
+    const client = createDataClient();
+    const data = await client.executeQuery(node.resolved, node.query);
+    if (loading) loading.remove();
+
+    const cards = Array.isArray(data) ? data : (node.cards || []);
+    wrapper.appendChild(buildCardsGrid(cards));
+  } catch (err) {
+    if (loading) loading.remove();
+    wrapper.appendChild(createErrorElement(err.message));
+  }
+}
+
+/**
+ * Build the cards grid element from a cards array.
+ */
+function buildCardsGrid(cards) {
   const grid = document.createElement('div');
   grid.className = 'ncodes-dsl-summary-grid';
 
-  const cards = node.cards || [];
   for (const card of cards) {
     const el = document.createElement('div');
     el.className = 'ncodes-dsl-summary-card';
@@ -46,8 +82,7 @@ function renderSummaryCards(node) {
     grid.appendChild(el);
   }
 
-  wrapper.appendChild(grid);
-  return wrapper;
+  return grid;
 }
 
 module.exports = { renderSummaryCards };
