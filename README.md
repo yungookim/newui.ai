@@ -10,7 +10,7 @@
 
 If you like n.codes, please star the repo.
 
-https://github.com/user-attachments/assets/783ca48a-e08d-4e39-88a9-1b60a1092a8e
+https://github.com/user-attachments/assets/157b9656-d762-4281-9d6f-910b950d6545
 
 # Add Agentic UI to your app
 
