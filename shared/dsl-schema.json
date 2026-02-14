@@ -60,7 +60,7 @@
     },
     "data-table": {
       "type": "object",
-      "required": ["type", "columns", "rows"],
+      "required": ["type", "columns"],
       "properties": {
         "type": { "const": "data-table" },
         "title": { "type": "string" },
@@ -88,13 +88,20 @@
             "type": "object",
             "additionalProperties": { "type": ["string", "number", "boolean", "null"] }
           }
-        }
+        },
+        "query": { "$ref": "#/definitions/query-binding" }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "if": {
+        "not": { "required": ["query"] }
+      },
+      "then": {
+        "required": ["type", "columns", "rows"]
+      }
     },
     "detail-view": {
       "type": "object",
-      "required": ["type", "fields"],
+      "required": ["type"],
       "properties": {
         "type": { "const": "detail-view" },
         "title": { "type": "string" },
@@ -116,9 +123,16 @@
             },
             "additionalProperties": false
           }
-        }
+        },
+        "query": { "$ref": "#/definitions/query-binding" }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "if": {
+        "not": { "required": ["query"] }
+      },
+      "then": {
+        "required": ["type", "fields"]
+      }
     },
     "form": {
       "type": "object",
@@ -158,13 +172,18 @@
           }
         },
         "submitLabel": { "type": "string" },
-        "action": { "type": "string" }
+        "action": {
+          "oneOf": [
+            { "type": "string" },
+            { "$ref": "#/definitions/action-binding" }
+          ]
+        }
       },
       "additionalProperties": false
     },
     "summary-cards": {
       "type": "object",
-      "required": ["type", "cards"],
+      "required": ["type"],
       "properties": {
         "type": { "const": "summary-cards" },
         "title": { "type": "string" },
@@ -185,13 +204,20 @@
             },
             "additionalProperties": false
           }
-        }
+        },
+        "query": { "$ref": "#/definitions/query-binding" }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "if": {
+        "not": { "required": ["query"] }
+      },
+      "then": {
+        "required": ["type", "cards"]
+      }
     },
     "chart": {
       "type": "object",
-      "required": ["type", "chartType", "labels", "datasets"],
+      "required": ["type", "chartType"],
       "properties": {
         "type": { "const": "chart" },
         "title": { "type": "string" },
@@ -218,13 +244,20 @@
             },
             "additionalProperties": false
           }
-        }
+        },
+        "query": { "$ref": "#/definitions/query-binding" }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "if": {
+        "not": { "required": ["query"] }
+      },
+      "then": {
+        "required": ["type", "chartType", "labels", "datasets"]
+      }
     },
     "list": {
       "type": "object",
-      "required": ["type", "items"],
+      "required": ["type"],
       "properties": {
         "type": { "const": "list" },
         "title": { "type": "string" },
@@ -240,9 +273,25 @@
             },
             "additionalProperties": false
           }
+        },
+        "query": { "$ref": "#/definitions/query-binding" },
+        "itemMapping": {
+          "type": "object",
+          "required": ["text"],
+          "properties": {
+            "text": { "type": "string" },
+            "secondary": { "type": "string" }
+          },
+          "additionalProperties": false
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "if": {
+        "not": { "required": ["query"] }
+      },
+      "then": {
+        "required": ["type", "items"]
+      }
     },
     "text": {
       "type": "object",
@@ -289,6 +338,33 @@
         "code": { "type": "string" },
         "details": { "type": "string" },
         "retry": { "type": "boolean", "default": false }
+      },
+      "additionalProperties": false
+    },
+    "query-binding": {
+      "type": "object",
+      "required": ["ref"],
+      "properties": {
+        "ref": { "type": "string" },
+        "params": {
+          "type": "object",
+          "additionalProperties": { "type": ["string", "number", "boolean", "null"] }
+        },
+        "responsePath": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "action-binding": {
+      "type": "object",
+      "required": ["ref"],
+      "properties": {
+        "ref": { "type": "string" },
+        "bodyFrom": { "type": "string", "enum": ["form"] },
+        "params": {
+          "type": "object",
+          "additionalProperties": { "type": ["string", "number", "boolean", "null"] }
+        },
+        "responsePath": { "type": "string" }
       },
       "additionalProperties": false
     }

@@ -2,7 +2,18 @@
 
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
-const { validateDSL, COMPONENT_TYPES, REQUIRED_PROPS, MAX_NESTING_DEPTH } = require('../dsl-types');
+const {
+  validateDSL,
+  COMPONENT_TYPES,
+  REQUIRED_PROPS,
+  MAX_NESTING_DEPTH,
+  QUERY_OPTIONAL_PROPS,
+  QUERY_COMPONENTS,
+  ACTION_COMPONENTS,
+  ACTION_BODY_FROM_VALUES,
+  validateQueryBinding,
+  validateActionBinding
+} = require('../dsl-types');
 
 // ─── Helpers ──────────────────────────────────────────────
 
@@ -860,4 +871,341 @@ describe('validateDSL — example files', () => {
       assert.equal(result.valid, true, `Errors in ${file}: ${result.errors.join(', ')}`);
     });
   }
+});
+
+// ─── New constants ──────────────────────────────────────
+
+describe('QUERY_OPTIONAL_PROPS', () => {
+  it('has entries for all query-supporting components', () => {
+    for (const t of QUERY_COMPONENTS) {
+      assert.ok(QUERY_OPTIONAL_PROPS[t], `missing QUERY_OPTIONAL_PROPS for ${t}`);
+      assert.ok(Array.isArray(QUERY_OPTIONAL_PROPS[t]));
+    }
+  });
+});
+
+describe('QUERY_COMPONENTS', () => {
+  it('includes expected types', () => {
+    const expected = ['data-table', 'detail-view', 'summary-cards', 'chart', 'list'];
+    for (const t of expected) {
+      assert.ok(QUERY_COMPONENTS.includes(t), `missing: ${t}`);
+    }
+  });
+});
+
+describe('ACTION_COMPONENTS', () => {
+  it('includes form', () => {
+    assert.ok(ACTION_COMPONENTS.includes('form'));
+  });
+});
+
+describe('ACTION_BODY_FROM_VALUES', () => {
+  it('includes form', () => {
+    assert.ok(ACTION_BODY_FROM_VALUES.includes('form'));
+  });
+});
+
+// ─── validateQueryBinding ────────────────────────────────
+
+describe('validateQueryBinding', () => {
+  it('accepts valid query binding', () => {
+    const errors = [];
+    validateQueryBinding({ ref: 'listTasks' }, 'test', errors);
+    assert.equal(errors.length, 0);
+  });
+
+  it('accepts query with params and responsePath', () => {
+    const errors = [];
+    validateQueryBinding({ ref: 'listTasks', params: { status: 'active' }, responsePath: 'data.items' }, 'test', errors);
+    assert.equal(errors.length, 0);
+  });
+
+  it('rejects non-object query', () => {
+    const errors = [];
+    validateQueryBinding('not-an-object', 'test', errors);
+    assert.equal(errors.length, 1);
+    assert.ok(errors[0].includes('must be an object'));
+  });
+
+  it('rejects null query', () => {
+    const errors = [];
+    validateQueryBinding(null, 'test', errors);
+    assert.equal(errors.length, 1);
+  });
+
+  it('rejects array query', () => {
+    const errors = [];
+    validateQueryBinding([], 'test', errors);
+    assert.equal(errors.length, 1);
+  });
+
+  it('rejects missing ref', () => {
+    const errors = [];
+    validateQueryBinding({}, 'test', errors);
+    assert.equal(errors.length, 1);
+    assert.ok(errors[0].includes('"ref"'));
+  });
+
+  it('rejects empty string ref', () => {
+    const errors = [];
+    validateQueryBinding({ ref: '' }, 'test', errors);
+    assert.equal(errors.length, 1);
+    assert.ok(errors[0].includes('"ref"'));
+  });
+
+  it('rejects non-string ref', () => {
+    const errors = [];
+    validateQueryBinding({ ref: 42 }, 'test', errors);
+    assert.equal(errors.length, 1);
+    assert.ok(errors[0].includes('"ref"'));
+  });
+
+  it('rejects non-object params', () => {
+    const errors = [];
+    validateQueryBinding({ ref: 'x', params: 'bad' }, 'test', errors);
+    assert.equal(errors.length, 1);
+    assert.ok(errors[0].includes('params'));
+  });
+
+  it('rejects array params', () => {
+    const errors = [];
+    validateQueryBinding({ ref: 'x', params: [1, 2] }, 'test', errors);
+    assert.equal(errors.length, 1);
+    assert.ok(errors[0].includes('params'));
+  });
+
+  it('rejects non-primitive param values', () => {
+    const errors = [];
+    validateQueryBinding({ ref: 'x', params: { filter: { nested: true } } }, 'test', errors);
+    assert.equal(errors.length, 1);
+    assert.ok(errors[0].includes('primitive'));
+  });
+
+  it('accepts primitive param values', () => {
+    const errors = [];
+    validateQueryBinding({ ref: 'x', params: { s: 'str', n: 42, b: true, nil: null } }, 'test', errors);
+    assert.equal(errors.length, 0);
+  });
+
+  it('rejects non-string responsePath', () => {
+    const errors = [];
+    validateQueryBinding({ ref: 'x', responsePath: 123 }, 'test', errors);
+    assert.equal(errors.length, 1);
+    assert.ok(errors[0].includes('responsePath'));
+  });
+});
+
+// ─── validateActionBinding ───────────────────────────────
+
+describe('validateActionBinding', () => {
+  it('accepts valid action binding', () => {
+    const errors = [];
+    validateActionBinding({ ref: 'createTask' }, 'test', errors);
+    assert.equal(errors.length, 0);
+  });
+
+  it('accepts action with bodyFrom and params', () => {
+    const errors = [];
+    validateActionBinding({ ref: 'createTask', bodyFrom: 'form', params: { extra: 'val' } }, 'test', errors);
+    assert.equal(errors.length, 0);
+  });
+
+  it('rejects non-object action', () => {
+    const errors = [];
+    validateActionBinding('string', 'test', errors);
+    assert.equal(errors.length, 1);
+    assert.ok(errors[0].includes('must be an object'));
+  });
+
+  it('rejects null action', () => {
+    const errors = [];
+    validateActionBinding(null, 'test', errors);
+    assert.equal(errors.length, 1);
+  });
+
+  it('rejects missing ref', () => {
+    const errors = [];
+    validateActionBinding({ bodyFrom: 'form' }, 'test', errors);
+    assert.equal(errors.length, 1);
+    assert.ok(errors[0].includes('"ref"'));
+  });
+
+  it('rejects invalid bodyFrom', () => {
+    const errors = [];
+    validateActionBinding({ ref: 'createTask', bodyFrom: 'json' }, 'test', errors);
+    assert.equal(errors.length, 1);
+    assert.ok(errors[0].includes('bodyFrom'));
+  });
+
+  it('rejects non-primitive param values', () => {
+    const errors = [];
+    validateActionBinding({ ref: 'x', params: { nested: { bad: true } } }, 'test', errors);
+    assert.equal(errors.length, 1);
+    assert.ok(errors[0].includes('primitive'));
+  });
+
+  it('rejects non-string responsePath', () => {
+    const errors = [];
+    validateActionBinding({ ref: 'x', responsePath: [] }, 'test', errors);
+    assert.equal(errors.length, 1);
+    assert.ok(errors[0].includes('responsePath'));
+  });
+});
+
+// ─── Query binding on components ─────────────────────────
+
+describe('validateDSL — query binding on data-table', () => {
+  it('accepts data-table with query and no rows', () => {
+    const result = validateDSL(minimalPage([
+      { type: 'data-table', columns: [{ key: 'id', label: 'ID' }], query: { ref: 'listTasks' } }
+    ]));
+    assert.equal(result.valid, true);
+  });
+
+  it('accepts data-table with query and rows', () => {
+    const result = validateDSL(minimalPage([
+      { type: 'data-table', columns: [{ key: 'id', label: 'ID' }], rows: [{ id: 1 }], query: { ref: 'listTasks' } }
+    ]));
+    assert.equal(result.valid, true);
+  });
+
+  it('rejects data-table with invalid query binding', () => {
+    const result = validateDSL(minimalPage([
+      { type: 'data-table', columns: [{ key: 'id', label: 'ID' }], query: { params: {} } }
+    ]));
+    assert.equal(result.valid, false);
+    assert.ok(result.errors.some(e => e.includes('"ref"')));
+  });
+
+  it('still requires rows when no query is present', () => {
+    const result = validateDSL(minimalPage([
+      { type: 'data-table', columns: [{ key: 'id', label: 'ID' }] }
+    ]));
+    assert.equal(result.valid, false);
+    assert.ok(result.errors.some(e => e.includes('"rows"')));
+  });
+});
+
+describe('validateDSL — query binding on detail-view', () => {
+  it('accepts detail-view with query and no fields', () => {
+    const result = validateDSL(minimalPage([
+      { type: 'detail-view', query: { ref: 'getTask' } }
+    ]));
+    assert.equal(result.valid, true);
+  });
+
+  it('still requires fields when no query', () => {
+    const result = validateDSL(minimalPage([
+      { type: 'detail-view' }
+    ]));
+    assert.equal(result.valid, false);
+    assert.ok(result.errors.some(e => e.includes('"fields"')));
+  });
+});
+
+describe('validateDSL — query binding on summary-cards', () => {
+  it('accepts summary-cards with query and no cards', () => {
+    const result = validateDSL(minimalPage([
+      { type: 'summary-cards', query: { ref: 'getStats' } }
+    ]));
+    assert.equal(result.valid, true);
+  });
+
+  it('still requires cards when no query', () => {
+    const result = validateDSL(minimalPage([
+      { type: 'summary-cards' }
+    ]));
+    assert.equal(result.valid, false);
+    assert.ok(result.errors.some(e => e.includes('"cards"')));
+  });
+});
+
+describe('validateDSL — query binding on chart', () => {
+  it('accepts chart with query and no labels/datasets', () => {
+    const result = validateDSL(minimalPage([
+      { type: 'chart', chartType: 'bar', query: { ref: 'getChartData' } }
+    ]));
+    assert.equal(result.valid, true);
+  });
+
+  it('still requires labels and datasets when no query', () => {
+    const result = validateDSL(minimalPage([
+      { type: 'chart', chartType: 'bar' }
+    ]));
+    assert.equal(result.valid, false);
+    assert.ok(result.errors.some(e => e.includes('"labels"') || e.includes('"datasets"')));
+  });
+});
+
+describe('validateDSL — query binding on list', () => {
+  it('accepts list with query and no items', () => {
+    const result = validateDSL(minimalPage([
+      { type: 'list', query: { ref: 'getItems' } }
+    ]));
+    assert.equal(result.valid, true);
+  });
+
+  it('still requires items when no query', () => {
+    const result = validateDSL(minimalPage([
+      { type: 'list' }
+    ]));
+    assert.equal(result.valid, false);
+    assert.ok(result.errors.some(e => e.includes('"items"')));
+  });
+});
+
+// ─── Action binding on form ─────────────────────────────
+
+describe('validateDSL — action binding on form', () => {
+  it('accepts form with string action (legacy)', () => {
+    const result = validateDSL(minimalPage([
+      { type: 'form', fields: [{ name: 'x', label: 'X', type: 'text' }], submitLabel: 'Go', action: '/submit' }
+    ]));
+    assert.equal(result.valid, true);
+  });
+
+  it('accepts form with action-binding object', () => {
+    const result = validateDSL(minimalPage([
+      { type: 'form', fields: [{ name: 'x', label: 'X', type: 'text' }], submitLabel: 'Go', action: { ref: 'createTask', bodyFrom: 'form' } }
+    ]));
+    assert.equal(result.valid, true);
+  });
+
+  it('accepts form with action-binding with params', () => {
+    const result = validateDSL(minimalPage([
+      { type: 'form', fields: [{ name: 'x', label: 'X', type: 'text' }], submitLabel: 'Go', action: { ref: 'createTask', params: { extra: 'val' } } }
+    ]));
+    assert.equal(result.valid, true);
+  });
+
+  it('rejects form with numeric action', () => {
+    const result = validateDSL(minimalPage([
+      { type: 'form', fields: [{ name: 'x', label: 'X', type: 'text' }], submitLabel: 'Go', action: 42 }
+    ]));
+    assert.equal(result.valid, false);
+    assert.ok(result.errors.some(e => e.includes('action') && e.includes('string or action-binding')));
+  });
+
+  it('rejects form with action-binding missing ref', () => {
+    const result = validateDSL(minimalPage([
+      { type: 'form', fields: [{ name: 'x', label: 'X', type: 'text' }], submitLabel: 'Go', action: { bodyFrom: 'form' } }
+    ]));
+    assert.equal(result.valid, false);
+    assert.ok(result.errors.some(e => e.includes('"ref"')));
+  });
+
+  it('rejects form with action-binding invalid bodyFrom', () => {
+    const result = validateDSL(minimalPage([
+      { type: 'form', fields: [{ name: 'x', label: 'X', type: 'text' }], submitLabel: 'Go', action: { ref: 'createTask', bodyFrom: 'json' } }
+    ]));
+    assert.equal(result.valid, false);
+    assert.ok(result.errors.some(e => e.includes('bodyFrom')));
+  });
+
+  it('accepts form without action (optional)', () => {
+    const result = validateDSL(minimalPage([
+      { type: 'form', fields: [{ name: 'x', label: 'X', type: 'text' }], submitLabel: 'Go' }
+    ]));
+    assert.equal(result.valid, true);
+  });
 });

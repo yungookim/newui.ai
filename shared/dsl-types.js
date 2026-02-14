@@ -21,6 +21,7 @@ const TEXT_VARIANTS = ['heading', 'paragraph', 'caption', 'code'];
 const TREND_DIRECTIONS = ['up', 'down', 'neutral'];
 const SAFE_HREF_PATTERN = /^(#|\/|https?:\/\/)/;
 const MAX_NESTING_DEPTH = 10;
+const ACTION_BODY_FROM_VALUES = ['form'];
 
 // Required props per component type (beyond 'type')
 const REQUIRED_PROPS = {
@@ -35,6 +36,21 @@ const REQUIRED_PROPS = {
   'empty-state': ['message'],
   'error': ['message']
 };
+
+// Props that become optional when `query` is present on the component
+const QUERY_OPTIONAL_PROPS = {
+  'data-table': ['rows'],
+  'detail-view': ['fields'],
+  'summary-cards': ['cards'],
+  'chart': ['labels', 'datasets'],
+  'list': ['items']
+};
+
+// Component types that support query binding
+const QUERY_COMPONENTS = ['data-table', 'detail-view', 'summary-cards', 'chart', 'list'];
+
+// Component types that support action binding
+const ACTION_COMPONENTS = ['form'];
 
 /**
  * Validate a DSL document.
@@ -93,7 +109,9 @@ function validateComponent(node, path, errors, depth) {
 
   // Check required props for this component type
   const required = REQUIRED_PROPS[node.type];
+  const optionalWhenQuery = (node.query && QUERY_OPTIONAL_PROPS[node.type]) || [];
   for (const prop of required) {
+    if (optionalWhenQuery.includes(prop)) continue;
     if (node[prop] === undefined || node[prop] === null) {
       errors.push(`${path} (${node.type}): missing required prop "${prop}"`);
     }
@@ -134,6 +152,65 @@ function validateComponent(node, path, errors, depth) {
   }
 }
 
+/**
+ * Validate a query-binding object: { ref, params?, responsePath? }
+ */
+function validateQueryBinding(query, path, errors) {
+  if (typeof query !== 'object' || query === null || Array.isArray(query)) {
+    errors.push(`${path}.query: must be an object`);
+    return;
+  }
+  if (!query.ref || typeof query.ref !== 'string') {
+    errors.push(`${path}.query: "ref" must be a non-empty string`);
+  }
+  if (query.params !== undefined) {
+    if (typeof query.params !== 'object' || query.params === null || Array.isArray(query.params)) {
+      errors.push(`${path}.query.params: must be a plain object`);
+    } else {
+      for (const [key, val] of Object.entries(query.params)) {
+        if (val !== null && typeof val === 'object') {
+          errors.push(`${path}.query.params.${key}: must be a primitive value`);
+        }
+      }
+    }
+  }
+  if (query.responsePath !== undefined && typeof query.responsePath !== 'string') {
+    errors.push(`${path}.query.responsePath: must be a string`);
+  }
+}
+
+/**
+ * Validate an action-binding object: { ref, bodyFrom?, params?, responsePath? }
+ */
+function validateActionBinding(action, path, errors) {
+  if (typeof action !== 'object' || action === null || Array.isArray(action)) {
+    errors.push(`${path}.action: must be an object`);
+    return;
+  }
+  if (!action.ref || typeof action.ref !== 'string') {
+    errors.push(`${path}.action: "ref" must be a non-empty string`);
+  }
+  if (action.bodyFrom !== undefined) {
+    if (!ACTION_BODY_FROM_VALUES.includes(action.bodyFrom)) {
+      errors.push(`${path}.action.bodyFrom: must be one of: ${ACTION_BODY_FROM_VALUES.join(', ')}`);
+    }
+  }
+  if (action.params !== undefined) {
+    if (typeof action.params !== 'object' || action.params === null || Array.isArray(action.params)) {
+      errors.push(`${path}.action.params: must be a plain object`);
+    } else {
+      for (const [key, val] of Object.entries(action.params)) {
+        if (val !== null && typeof val === 'object') {
+          errors.push(`${path}.action.params.${key}: must be a primitive value`);
+        }
+      }
+    }
+  }
+  if (action.responsePath !== undefined && typeof action.responsePath !== 'string') {
+    errors.push(`${path}.action.responsePath: must be a string`);
+  }
+}
+
 function validatePage(node, path, errors, depth) {
   if (node.title !== undefined && typeof node.title !== 'string') {
     errors.push(`${path} (page): "title" must be a string`);
@@ -153,6 +230,9 @@ function validatePage(node, path, errors, depth) {
 }
 
 function validateDataTable(node, path, errors) {
+  if (node.query !== undefined) {
+    validateQueryBinding(node.query, path, errors);
+  }
   if (node.columns !== undefined && node.columns !== null) {
     if (!Array.isArray(node.columns)) {
       errors.push(`${path} (data-table): "columns" must be an array`);
@@ -195,6 +275,9 @@ function validateDataTable(node, path, errors) {
 }
 
 function validateDetailView(node, path, errors) {
+  if (node.query !== undefined) {
+    validateQueryBinding(node.query, path, errors);
+  }
   if (node.fields !== undefined && node.fields !== null) {
     if (!Array.isArray(node.fields)) {
       errors.push(`${path} (detail-view): "fields" must be an array`);
@@ -265,9 +348,21 @@ function validateForm(node, path, errors) {
   if (node.submitLabel !== undefined && typeof node.submitLabel !== 'string') {
     errors.push(`${path} (form): "submitLabel" must be a string`);
   }
+  if (node.action !== undefined && node.action !== null) {
+    if (typeof node.action === 'string') {
+      // Legacy string action — valid as-is
+    } else if (typeof node.action === 'object') {
+      validateActionBinding(node.action, path, errors);
+    } else {
+      errors.push(`${path} (form): "action" must be a string or action-binding object`);
+    }
+  }
 }
 
 function validateSummaryCards(node, path, errors) {
+  if (node.query !== undefined) {
+    validateQueryBinding(node.query, path, errors);
+  }
   if (node.cards !== undefined && node.cards !== null) {
     if (!Array.isArray(node.cards)) {
       errors.push(`${path} (summary-cards): "cards" must be an array`);
@@ -296,6 +391,9 @@ function validateSummaryCards(node, path, errors) {
 }
 
 function validateChart(node, path, errors) {
+  if (node.query !== undefined) {
+    validateQueryBinding(node.query, path, errors);
+  }
   if (node.chartType && !CHART_TYPES.includes(node.chartType)) {
     errors.push(`${path} (chart): invalid chartType "${node.chartType}"`);
   }
@@ -325,6 +423,9 @@ function validateChart(node, path, errors) {
 }
 
 function validateList(node, path, errors) {
+  if (node.query !== undefined) {
+    validateQueryBinding(node.query, path, errors);
+  }
   if (node.items !== undefined && node.items !== null) {
     if (!Array.isArray(node.items)) {
       errors.push(`${path} (list): "items" must be an array`);
@@ -387,5 +488,11 @@ module.exports = {
   SAFE_HREF_PATTERN,
   MAX_NESTING_DEPTH,
   REQUIRED_PROPS,
-  validateDSL
+  QUERY_OPTIONAL_PROPS,
+  QUERY_COMPONENTS,
+  ACTION_COMPONENTS,
+  ACTION_BODY_FROM_VALUES,
+  validateDSL,
+  validateQueryBinding,
+  validateActionBinding
 };

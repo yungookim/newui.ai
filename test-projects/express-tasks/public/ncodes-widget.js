@@ -1,4 +1,4 @@
-var NCodes=(()=>{var l=(e,t)=>()=>(t||e((t={exports:{}}).exports,t),t.exports);var X=l((lt,_)=>{var $={user:null,capabilityMapUrl:"/n.codes.capabilities.json",mode:"simulation",theme:"dark",position:"bottom-center",triggerLabel:"Build with AI",panelTitle:"n.codes",panelIntro:"Describe the UI you need and it will be generated instantly.",quickPrompts:[]},V=new Set(["simulation","live"]),O=new Set(["dark","light","auto"]),G=new Set(["bottom-center","bottom-right","bottom-left"]);function F(e){if(!e||typeof e!="object")throw new Error("NCodes.init() requires a config object.");if(e.mode&&!V.has(e.mode))throw new Error(`Invalid mode "${e.mode}". Use: ${Array.from(V).join(", ")}`);if(e.theme&&!O.has(e.theme))throw new Error(`Invalid theme "${e.theme}". Use: ${Array.from(O).join(", ")}`);if(e.position&&!G.has(e.position))throw new Error(`Invalid position "${e.position}". Use: ${Array.from(G).join(", ")}`);return!0}function Se(e){return F(e),{...$,...e}}_.exports={DEFAULTS:$,validateConfig:F,mergeConfig:Se}});var K=l((pt,J)=>{function Ce(e){return`
+var NCodes=(()=>{var x=(e,t)=>()=>(t||e((t={exports:{}}).exports,t),t.exports);var ne=x((en,te)=>{var Z={user:null,apiUrl:"/api/generate",provider:"openai",model:"gpt-5-mini",mode:"simulation",theme:"dark",position:"bottom-center",triggerLabel:"Build with AI",panelTitle:"n.codes",panelIntro:"Describe the UI you need and it will be generated instantly.",quickPrompts:[]},W=new Set(["simulation","live"]),K=new Set(["dark","light","auto"]),Y=new Set(["bottom-center","bottom-right","bottom-left"]);function ee(e){if(!e||typeof e!="object")throw new Error("NCodes.init() requires a config object.");if(e.mode&&!W.has(e.mode))throw new Error(`Invalid mode "${e.mode}". Use: ${Array.from(W).join(", ")}`);if(e.theme&&!K.has(e.theme))throw new Error(`Invalid theme "${e.theme}". Use: ${Array.from(K).join(", ")}`);if(e.position&&!Y.has(e.position))throw new Error(`Invalid position "${e.position}". Use: ${Array.from(Y).join(", ")}`);return!0}function Je(e){return ee(e),{...Z,...e}}te.exports={DEFAULTS:Z,validateConfig:ee,mergeConfig:Je}});var ae=x((tn,oe)=>{function Qe(e){return`
     :host {
       ${e!=="light"?`
     --ncodes-bg-body: #050505;
@@ -425,6 +425,33 @@ var NCodes=(()=>{var l=(e,t)=>()=>(t||e((t={exports:{}}).exports,t),t.exports);v
     @keyframes ncodes-spin {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
+    }
+
+    .status-step {
+      display: inline-block;
+      font-size: 11px;
+      color: var(--ncodes-text-dim);
+      font-family: var(--ncodes-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-left: 26px;
+      margin-top: 6px;
+    }
+
+    .status-step:empty {
+      display: none;
+    }
+
+    .status-step::after {
+      content: '';
+      animation: ncodes-dots 1.4s steps(4, end) infinite;
+    }
+
+    @keyframes ncodes-dots {
+      0% { content: ''; }
+      25% { content: '.'; }
+      50% { content: '..'; }
+      75% { content: '...'; }
     }
 
     /* ===== Panel Expansion (result view) \u2014 centered dialog ===== */
@@ -1069,7 +1096,118 @@ var NCodes=(()=>{var l=(e,t)=>()=>(t||e((t={exports:{}}).exports,t),t.exports);v
         grid-template-columns: 1fr;
       }
     }
-  `}J.exports={getStyles:Ce}});var W=l((ut,Q)=>{function Ee(){let e=document.createElementNS("http://www.w3.org/2000/svg","svg");e.setAttribute("width","18"),e.setAttribute("height","18"),e.setAttribute("viewBox","0 0 24 24"),e.setAttribute("fill","none"),e.setAttribute("stroke","currentColor"),e.setAttribute("stroke-width","2.5");let t=document.createElementNS("http://www.w3.org/2000/svg","path");t.setAttribute("d","M7 4h-3v16h3"),t.setAttribute("stroke-linecap","round"),t.setAttribute("stroke-linejoin","round");let n=document.createElementNS("http://www.w3.org/2000/svg","path");return n.setAttribute("d","M17 4h3v16h-3"),n.setAttribute("stroke-linecap","round"),n.setAttribute("stroke-linejoin","round"),e.appendChild(t),e.appendChild(n),e}function Ae(e,t){let n=document.createElement("button");n.className=`ncodes-trigger ${e.position}`,n.title="Open n.codes",n.appendChild(Ee());let a=document.createElement("span");return a.textContent=e.triggerLabel,n.appendChild(a),n.addEventListener("click",t),n}function Te(e){e.classList.remove("hidden")}function qe(e){e.classList.add("hidden")}Q.exports={createTrigger:Ae,showTrigger:Te,hideTrigger:qe}});var ne=l((mt,te)=>{function Le(e){let t=document.createElement("div");t.className=`ncodes-panel ${e.position}`;let n=document.createElement("div");n.className="panel-header";let a=document.createElement("div");a.className="panel-title";let r=document.createElement("span");r.className="panel-logo",r.textContent="n";let i=document.createElement("span");i.textContent=e.panelTitle,a.appendChild(r),a.appendChild(i);let s=document.createElement("button");s.className="panel-close",s.setAttribute("data-ncodes-panel-close",""),s.textContent="\xD7",n.appendChild(a),n.appendChild(s);let c=document.createElement("div");c.className="panel-body";let d=document.createElement("div");d.className="prompt-view";let p=document.createElement("div");p.className="panel-intro";let B=document.createElement("p");B.textContent=e.panelIntro,p.appendChild(B);let h=document.createElement("div");h.className="history-section",h.style.display="none";let T=document.createElement("div");T.className="history-label",T.textContent="Recent features";let j=document.createElement("div");j.className="history-list",h.appendChild(T),h.appendChild(j);let v=document.createElement("div");v.className="prompt-section";let g=document.createElement("textarea");g.className="prompt-input",g.placeholder="e.g., Show me overdue invoices with a remind button...",g.rows=3;let x=document.createElement("button");x.className="generate-btn";let q=document.createElement("span");q.className="btn-text",q.textContent="Generate";let f=document.createElement("span");f.className="btn-loading",f.style.display="none";for(let u=0;u<3;u++){let m=document.createElement("span");m.className="loading-dot",f.appendChild(m)}if(x.appendChild(q),x.appendChild(f),v.appendChild(g),v.appendChild(x),d.appendChild(p),d.appendChild(h),d.appendChild(v),e.quickPrompts.length>0){let u=document.createElement("div");u.className="quick-prompts";let m=document.createElement("div");m.className="quick-prompts-label",m.textContent="Try these examples:",u.appendChild(m),e.quickPrompts.forEach(U=>{let E=document.createElement("button");E.className="quick-prompt",E.setAttribute("data-prompt",U.prompt),E.textContent=U.label,u.appendChild(E)}),d.appendChild(u)}let y=document.createElement("div");y.className="generation-status",y.style.display="none";let k=document.createElement("div");k.className="status-line";let L=document.createElement("span");L.className="status-icon spinning",L.textContent="\u2699";let N=document.createElement("span");N.className="status-text",N.textContent="Analyzing request...",k.appendChild(L),k.appendChild(N),y.appendChild(k),d.appendChild(y);let w=document.createElement("div");w.className="result-view";let S=document.createElement("div");S.className="result-header";let C=document.createElement("button");C.className="result-back-btn",C.setAttribute("data-ncodes-back",""),C.textContent="\u2190 Back";let D=document.createElement("span");D.className="result-prompt-label",S.appendChild(C),S.appendChild(D);let H=document.createElement("div");return H.className="result-content",w.appendChild(S),w.appendChild(H),c.appendChild(d),c.appendChild(w),t.appendChild(n),t.appendChild(c),t}function Ne(e,t){e.classList.add("open"),t&&t.classList.add("hidden");let n=e.querySelector(".prompt-input");n&&n.focus()}function Ie(e,t){e.classList.remove("open"),t&&t.classList.remove("hidden"),ee(e),Y(e)}function Y(e){let t=e.querySelector(".generation-status"),n=e.querySelector(".generate-btn");if(t&&(t.style.display="none"),n){n.disabled=!1;let a=n.querySelector(".btn-text"),r=n.querySelector(".btn-loading");a&&(a.style.display="inline"),r&&(r.style.display="none")}}function Z(e){for(;e.firstChild;)e.removeChild(e.firstChild)}function ze(e,t){e.classList.add("expanded");let n=e.querySelector(".result-prompt-label");n&&(n.textContent=t||"")}function ee(e){e.classList.remove("expanded");let t=e.querySelector(".result-content");t&&Z(t)}function Me(e){return e.querySelector(".result-content")}function Pe(e,t){let n=e.querySelector(".history-section"),a=e.querySelector(".history-list");if(!(!n||!a)){if(Z(a),t.length===0){n.style.display="none";return}n.style.display="block",t.forEach(r=>{let i=document.createElement("div");i.className="history-item",i.setAttribute("data-history-id",r.id),i.setAttribute("data-template-id",r.templateId);let s=document.createElement("span");s.className="history-prompt-text",s.textContent=r.prompt;let c=document.createElement("span");c.className="history-badge",c.textContent=r.templateId;let d=document.createElement("button");d.className="history-delete",d.setAttribute("data-history-delete",r.id),d.textContent="\xD7",i.appendChild(s),i.appendChild(c),i.appendChild(d),a.appendChild(i)})}}te.exports={createPanel:Le,openPanel:Ne,closePanel:Ie,resetPanelState:Y,showResultView:ze,showPromptView:ee,getResultContainer:Me,updateHistoryList:Pe}});var re=l((ht,se)=>{var ae={invoice:"invoices",overdue:"invoices",reminder:"invoices",health:"dashboard",dashboard:"dashboard",engagement:"dashboard",churn:"dashboard",archive:"archive",inactive:"archive",bulk:"archive",user:"archive"},Re=["Analyzing request...","Mapping to capabilities...","Selecting components...","Generating UI...","Applying styles...","Done!"];function Be(e){let t=e.toLowerCase();for(let[n,a]of Object.entries(ae))if(t.includes(n))return a;return"invoices"}function je(e){return e==="invoices"?oe():e==="dashboard"?De():e==="archive"?He():oe()}function oe(){return`
+
+    /* ===== Error State ===== */
+    .ncodes-error-state {
+      text-align: center;
+      padding: 32px 20px;
+    }
+
+    .ncodes-error-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+
+    .ncodes-error-message {
+      font-size: 14px;
+      color: var(--ncodes-text-muted);
+      line-height: 1.5;
+      margin-bottom: 20px;
+      max-width: 320px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .ncodes-error-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .ncodes-error-retry {
+      padding: 8px 18px;
+      background: var(--ncodes-accent);
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--ncodes-font);
+      transition: background 0.15s ease;
+    }
+
+    .ncodes-error-retry:hover {
+      background: var(--ncodes-accent-hover);
+    }
+
+    .ncodes-error-fallback {
+      padding: 8px 18px;
+      background: transparent;
+      border: 1px solid var(--ncodes-border-color);
+      border-radius: 8px;
+      color: var(--ncodes-text-muted);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: var(--ncodes-font);
+      transition: border-color 0.15s ease;
+    }
+
+    .ncodes-error-fallback:hover {
+      border-color: var(--ncodes-text-muted);
+    }
+
+    /* ===== Clarifying Question ===== */
+    .ncodes-clarifying-question {
+      padding: 32px 20px;
+      text-align: center;
+    }
+
+    .ncodes-clarifying-text {
+      font-size: 15px;
+      color: var(--ncodes-text-main);
+      line-height: 1.5;
+      margin-bottom: 20px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .ncodes-clarifying-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+
+    .ncodes-clarifying-option {
+      padding: 10px 16px;
+      background: var(--ncodes-bg-body);
+      border: 1px solid var(--ncodes-border-color);
+      border-radius: 8px;
+      color: var(--ncodes-text-muted);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: var(--ncodes-font);
+    }
+
+    .ncodes-clarifying-option:hover {
+      border-color: var(--ncodes-accent);
+      color: var(--ncodes-text-main);
+      background: var(--ncodes-accent-dim);
+    }
+
+    /* ===== Sandbox iframe ===== */
+    .result-content iframe {
+      width: 100%;
+      height: 100%;
+      min-height: 400px;
+    }
+  `}oe.exports={getStyles:Qe}});var se=x((nn,re)=>{function Xe(){let e=document.createElementNS("http://www.w3.org/2000/svg","svg");e.setAttribute("width","18"),e.setAttribute("height","18"),e.setAttribute("viewBox","0 0 24 24"),e.setAttribute("fill","none"),e.setAttribute("stroke","currentColor"),e.setAttribute("stroke-width","2.5");let t=document.createElementNS("http://www.w3.org/2000/svg","path");t.setAttribute("d","M7 4h-3v16h3"),t.setAttribute("stroke-linecap","round"),t.setAttribute("stroke-linejoin","round");let n=document.createElementNS("http://www.w3.org/2000/svg","path");return n.setAttribute("d","M17 4h3v16h-3"),n.setAttribute("stroke-linecap","round"),n.setAttribute("stroke-linejoin","round"),e.appendChild(t),e.appendChild(n),e}function We(e,t){let n=document.createElement("button");n.className=`ncodes-trigger ${e.position}`,n.title="Open n.codes",n.appendChild(Xe());let o=document.createElement("span");return o.textContent=e.triggerLabel,n.appendChild(o),n.addEventListener("click",t),n}function Ke(e){e.classList.remove("hidden")}function Ye(e){e.classList.add("hidden")}re.exports={createTrigger:We,showTrigger:Ke,hideTrigger:Ye}});var pe=x((on,le)=>{function Ze(e){let t=document.createElement("div");t.className=`ncodes-panel ${e.position}`;let n=document.createElement("div");n.className="panel-header";let o=document.createElement("div");o.className="panel-title";let r=document.createElement("span");r.className="panel-logo",r.textContent="n";let s=document.createElement("span");s.textContent=e.panelTitle,o.appendChild(r),o.appendChild(s);let i=document.createElement("button");i.className="panel-close",i.setAttribute("data-ncodes-panel-close",""),i.textContent="\xD7",n.appendChild(o),n.appendChild(i);let c=document.createElement("div");c.className="panel-body";let d=document.createElement("div");d.className="prompt-view";let u=document.createElement("div");u.className="panel-intro";let h=document.createElement("p");h.textContent=e.panelIntro,u.appendChild(h);let l=document.createElement("div");l.className="history-section",l.style.display="none";let p=document.createElement("div");p.className="history-label",p.textContent="Recent features";let m=document.createElement("div");m.className="history-list",l.appendChild(p),l.appendChild(m);let b=document.createElement("div");b.className="prompt-section";let S=document.createElement("textarea");S.className="prompt-input",S.placeholder="e.g., Show me overdue invoices with a remind button...",S.rows=3;let g=document.createElement("button");g.className="generate-btn";let y=document.createElement("span");y.className="btn-text",y.textContent="Generate";let w=document.createElement("span");w.className="btn-loading",w.style.display="none";for(let T=0;T<3;T++){let I=document.createElement("span");I.className="loading-dot",w.appendChild(I)}if(g.appendChild(y),g.appendChild(w),b.appendChild(S),b.appendChild(g),d.appendChild(u),d.appendChild(l),d.appendChild(b),e.quickPrompts.length>0){let T=document.createElement("div");T.className="quick-prompts";let I=document.createElement("div");I.className="quick-prompts-label",I.textContent="Try these examples:",T.appendChild(I),e.quickPrompts.forEach(X=>{let D=document.createElement("button");D.className="quick-prompt",D.setAttribute("data-prompt",X.prompt),D.textContent=X.label,T.appendChild(D)}),d.appendChild(T)}let f=document.createElement("div");f.className="generation-status",f.style.display="none";let L=document.createElement("div");L.className="status-line";let k=document.createElement("span");k.className="status-icon spinning",k.textContent="\u2699";let E=document.createElement("span");E.className="status-text",E.textContent="Analyzing request...",L.appendChild(k),L.appendChild(E),f.appendChild(L);let M=document.createElement("div");M.className="status-step",f.appendChild(M),d.appendChild(f);let C=document.createElement("div");C.className="result-view";let j=document.createElement("div");j.className="result-header";let U=document.createElement("button");U.className="result-back-btn",U.setAttribute("data-ncodes-back",""),U.textContent="\u2190 Back";let J=document.createElement("span");J.className="result-prompt-label",j.appendChild(U),j.appendChild(J);let Q=document.createElement("div");return Q.className="result-content",C.appendChild(j),C.appendChild(Q),c.appendChild(d),c.appendChild(C),t.appendChild(n),t.appendChild(c),t}function et(e,t){e.classList.add("open"),t&&t.classList.add("hidden");let n=e.querySelector(".prompt-input");n&&n.focus()}function tt(e,t){e.classList.remove("open"),t&&t.classList.remove("hidden"),ce(e),ie(e)}function ie(e){let t=e.querySelector(".generation-status"),n=e.querySelector(".generate-btn");if(t&&(t.style.display="none"),n){n.disabled=!1;let o=n.querySelector(".btn-text"),r=n.querySelector(".btn-loading");o&&(o.style.display="inline"),r&&(r.style.display="none")}}function de(e){for(;e.firstChild;)e.removeChild(e.firstChild)}function nt(e,t){e.classList.add("expanded");let n=e.querySelector(".result-prompt-label");n&&(n.textContent=t||"")}function ce(e){e.classList.remove("expanded");let t=e.querySelector(".result-content");t&&de(t)}function ot(e){return e.querySelector(".result-content")}function at(e,t){let n=e.querySelector(".history-section"),o=e.querySelector(".history-list");if(!(!n||!o)){if(de(o),t.length===0){n.style.display="none";return}n.style.display="block",t.forEach(r=>{let s=document.createElement("div");s.className="history-item",s.setAttribute("data-history-id",r.id),s.setAttribute("data-template-id",r.templateId);let i=document.createElement("span");i.className="history-prompt-text",i.textContent=r.prompt;let c=document.createElement("span");c.className="history-badge",c.textContent=r.templateId;let d=document.createElement("button");d.className="history-delete",d.setAttribute("data-history-delete",r.id),d.textContent="\xD7",s.appendChild(i),s.appendChild(c),s.appendChild(d),o.appendChild(s)})}}function rt(e,t){let n=e.querySelector(".prompt-view");if(!n)return;let o=n.querySelector(".quick-prompts");if(o&&o.remove(),!t||t.length===0)return;let r=document.createElement("div");r.className="quick-prompts";let s=document.createElement("div");s.className="quick-prompts-label",s.textContent="Try these examples:",r.appendChild(s),t.forEach(c=>{let d=document.createElement("button");d.className="quick-prompt",d.setAttribute("data-prompt",c.prompt),d.textContent=c.label,r.appendChild(d)});let i=n.querySelector(".generation-status");i?n.insertBefore(r,i):n.appendChild(r)}le.exports={createPanel:Ze,openPanel:et,closePanel:tt,resetPanelState:ie,showResultView:nt,showPromptView:ce,getResultContainer:ot,updateHistoryList:at,updateQuickPrompts:rt}});var ge=x((an,he)=>{var me={invoice:"invoices",overdue:"invoices",reminder:"invoices",health:"dashboard",dashboard:"dashboard",engagement:"dashboard",churn:"dashboard",archive:"archive",inactive:"archive",bulk:"archive",user:"archive"},st=["Analyzing request...","Mapping to capabilities...","Selecting components...","Generating UI...","Applying styles...","Done!"];function it(e){let t=e.toLowerCase();for(let[n,o]of Object.entries(me))if(t.includes(n))return o;return"invoices"}function dt(e){return e==="invoices"?ue():e==="dashboard"?ct():e==="archive"?lt():ue()}function ue(){return`
     <div class="generated-header">
       <div class="generated-title">
         <h2>Overdue Invoices Over $500</h2>
@@ -1177,7 +1315,7 @@ var NCodes=(()=>{var l=(e,t)=>()=>(t||e((t={exports:{}}).exports,t),t.exports);v
         <button class="action-btn primary">Send All Reminders</button>
       </div>
     </div>
-  `}function De(){return`
+  `}function ct(){return`
     <div class="generated-header">
       <div class="generated-title">
         <h2>Customer Health Dashboard</h2>
@@ -1252,7 +1390,7 @@ var NCodes=(()=>{var l=(e,t)=>()=>(t||e((t={exports:{}}).exports,t),t.exports);v
         <button class="action-btn primary">Schedule Outreach</button>
       </div>
     </div>
-  `}function He(){return`
+  `}function lt(){return`
     <div class="generated-header">
       <div class="generated-title">
         <h2>Bulk Archive Inactive Users</h2>
@@ -1328,6 +1466,81 @@ var NCodes=(()=>{var l=(e,t)=>()=>(t||e((t={exports:{}}).exports,t),t.exports);v
         </div>
       </div>
     </div>
-  `}se.exports={PROMPT_TEMPLATES:ae,STATUS_MESSAGES:Re,findTemplate:Be,getTemplateHTML:je}});var le=l((bt,ce)=>{function Ue(e,t){de(e);let r=new DOMParser().parseFromString(t,"text/html").body.childNodes;for(;r.length>0;)e.appendChild(r[0]);return ie(e),e}function de(e){if(e)for(;e.firstChild;)e.removeChild(e.firstChild)}function ie(e){let t=e.querySelectorAll(".action-btn.remind");t.forEach(i=>{i.addEventListener("click",function(){let s=this.textContent;this.textContent="Sent!",this.style.background="var(--ncodes-accent)",this.style.color="#000",this.disabled=!0,setTimeout(()=>{this.textContent=s,this.style.background="",this.style.color="",this.disabled=!1},2e3)})});let n=e.querySelector(".action-btn.primary");n&&n.textContent.includes("Send All")&&n.addEventListener("click",function(){let i=this.textContent;this.textContent="All reminders sent!",this.disabled=!0,t.forEach(s=>{s.textContent="Sent!",s.style.background="var(--ncodes-accent)",s.style.color="#000",s.disabled=!0}),setTimeout(()=>{this.textContent=i,this.disabled=!1,t.forEach(s=>{s.textContent="Send Reminder",s.style.background="",s.style.color="",s.disabled=!1})},2e3)});let a=e.querySelector(".action-btn.danger");a&&a.addEventListener("click",function(){this.textContent="Archived!",this.style.background="var(--ncodes-accent)",this.disabled=!0});let r=e.querySelector("[data-ncodes-select-all]");r&&r.addEventListener("change",function(){let i=e.querySelectorAll(".row-checkbox"),s=e.querySelector(".selection-count");i.forEach(c=>{c.checked=this.checked}),s&&(s.textContent=this.checked?"234 selected":"0 selected")})}ce.exports={renderGeneratedUI:Ue,clearRenderedUI:de,setupActionHandlers:ie}});var ue=l((vt,pe)=>{var b="ncodes:history";function I(){try{let e=localStorage.getItem(b);if(!e)return[];let t=JSON.parse(e);return Array.isArray(t)?t:[]}catch{return[]}}function Ve({prompt:e,templateId:t}){let n=I(),a={id:String(Date.now()),prompt:e,templateId:t,timestamp:Date.now()};return n.unshift(a),n.length>20&&(n.length=20),localStorage.setItem(b,JSON.stringify(n)),a}function Oe(e){let t=I().filter(n=>n.id!==e);return localStorage.setItem(b,JSON.stringify(t)),t}function Ge(){localStorage.removeItem(b)}pe.exports={getHistory:I,addToHistory:Ve,removeFromHistory:Oe,clearHistory:Ge,STORAGE_KEY:b,MAX_ENTRIES:20}});var it=l((gt,we)=>{var{mergeConfig:$e}=X(),{getStyles:Fe}=K(),{createTrigger:_e}=W(),{createPanel:Xe,openPanel:he,closePanel:A,showResultView:be,showPromptView:Je,getResultContainer:M,updateHistoryList:Ke}=ne(),{findTemplate:Qe,getTemplateHTML:ve,STATUS_MESSAGES:z}=re(),{renderGeneratedUI:ge,clearRenderedUI:P}=le(),{getHistory:We,addToHistory:Ye,removeFromHistory:Ze}=ue(),o=null;function et(e){o&&ke();let t=$e(e);if(!t.user){o={config:t,mounted:!1};return}if(typeof CSS<"u"&&CSS.registerProperty)try{CSS.registerProperty({name:"--ncodes-glow-angle",syntax:"<angle>",initialValue:"0deg",inherits:!1})}catch{}let n=document.createElement("div");n.id="ncodes-root";let a=n.attachShadow({mode:"open"}),r=document.createElement("style"),i=t.theme==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light":t.theme;r.textContent=Fe(i),a.appendChild(r);let s=_e(t,()=>{he(c,s)}),c=Xe(t);a.appendChild(s),a.appendChild(c),document.body.appendChild(n),o={config:t,host:n,shadow:a,trigger:s,panel:c,mounted:!0,isGenerating:!1},tt(),R()}function tt(){if(!o||!o.mounted)return;let{panel:e,trigger:t}=o,n=e.querySelector("[data-ncodes-panel-close]");n&&n.addEventListener("click",()=>A(e,t));let a=e.querySelector(".generate-btn");a&&a.addEventListener("click",me);let r=e.querySelector(".prompt-input");r&&r.addEventListener("keydown",d=>{d.key==="Enter"&&!d.shiftKey&&(d.preventDefault(),me())}),e.querySelectorAll(".quick-prompt").forEach(d=>{d.addEventListener("click",()=>{let p=e.querySelector(".prompt-input");p&&(p.value=d.getAttribute("data-prompt"),p.focus())})});let s=e.querySelector(".history-list");s&&s.addEventListener("click",nt);let c=e.querySelector("[data-ncodes-back]");c&&c.addEventListener("click",ye),document.addEventListener("keydown",xe),document.addEventListener("click",fe)}function xe(e){!o||!o.mounted||e.key==="Escape"&&o.panel.classList.contains("open")&&(o.panel.classList.contains("expanded")?ye():A(o.panel,o.trigger))}function fe(e){!o||!o.mounted||o.panel.classList.contains("open")&&!o.host.contains(e.target)&&A(o.panel,o.trigger)}function ye(){if(!o||!o.mounted)return;let e=M(o.panel);P(e),Je(o.panel)}function nt(e){if(!o||!o.mounted)return;let t=e.target.closest("[data-history-delete]");if(t){e.stopPropagation();let a=t.getAttribute("data-history-delete");Ze(a),R();return}let n=e.target.closest(".history-item");if(n){let a=n.getAttribute("data-template-id"),r=n.querySelector(".history-prompt-text"),i=r?r.textContent:"";ot(a,i)}}function ot(e,t){if(!o||!o.mounted)return;let n=ve(e),a=M(o.panel);P(a),ge(a,n),be(o.panel,t)}async function me(){if(!o||!o.mounted||o.isGenerating)return;let e=o.panel.querySelector(".prompt-input"),t=e?e.value.trim():"";if(!t)return;o.isGenerating=!0;let n=o.panel.querySelector(".generate-btn");if(n){n.disabled=!0;let c=n.querySelector(".btn-text"),d=n.querySelector(".btn-loading");c&&(c.style.display="none"),d&&(d.style.display="flex")}await at();let a=Qe(t),r=ve(a);Ye({prompt:t,templateId:a}),R();let i=M(o.panel);if(P(i),ge(i,r),be(o.panel,t),n){n.disabled=!1;let c=n.querySelector(".btn-text"),d=n.querySelector(".btn-loading");c&&(c.style.display="inline"),d&&(d.style.display="none")}let s=o.panel.querySelector(".generation-status");s&&(s.style.display="none"),e&&(e.value=""),o.isGenerating=!1}async function at(){if(!o||!o.mounted)return;let e=o.panel.querySelector(".generation-status"),t=o.panel.querySelector(".status-text");if(!(!e||!t)){e.style.display="block";for(let n=0;n<z.length;n++){t.textContent=z[n];let a=n===z.length-1?300:400+Math.random()*300;await dt(a)}}}function R(){if(!o||!o.mounted)return;let e=We();Ke(o.panel,e)}function st(){!o||!o.mounted||he(o.panel,o.trigger)}function rt(){!o||!o.mounted||A(o.panel,o.trigger)}function ke(){o&&(document.removeEventListener("keydown",xe),document.removeEventListener("click",fe),o.host&&o.host.parentNode&&o.host.parentNode.removeChild(o.host),o=null)}function dt(e){return new Promise(t=>setTimeout(t,e))}we.exports={init:et,open:st,close:rt,destroy:ke}});return it();})();
+  `}he.exports={PROMPT_TEMPLATES:me,STATUS_MESSAGES:st,findTemplate:it,getTemplateHTML:dt}});var ve=x((rn,be)=>{"use strict";function pt(e){return`
+(function() {
+  'use strict';
+
+  var REQUEST_TIMEOUT = 30000;
+  var _requestId = 0;
+  var _pending = {};
+
+  function generateId() {
+    return 'ncodes-req-' + (++_requestId) + '-' + Date.now();
+  }
+
+  function sendRequest(method, ref, payload) {
+    return new Promise(function(resolve, reject) {
+      var id = generateId();
+      console.log('[n.codes:bridge] request', method, ref, payload);
+
+      var timeoutHandle = setTimeout(function() {
+        delete _pending[id];
+        console.warn('[n.codes:bridge] timeout', id, ref);
+        reject(new Error('API request timed out after ' + REQUEST_TIMEOUT + 'ms'));
+      }, REQUEST_TIMEOUT);
+
+      _pending[id] = { resolve: resolve, reject: reject, timeout: timeoutHandle };
+
+      window.parent.postMessage({
+        type: 'ncodes:api-request',
+        id: id,
+        method: method,
+        ref: ref,
+        params: method === 'query' ? payload : undefined,
+        data: method === 'action' ? payload : undefined
+      }, '*');
+    });
+  }
+
+  window.addEventListener('message', function(event) {
+    if (!event.data || event.data.type !== 'ncodes:api-response') return;
+
+    var id = event.data.id;
+    var handler = _pending[id];
+    if (!handler) return;
+
+    clearTimeout(handler.timeout);
+    delete _pending[id];
+
+    console.log('[n.codes:bridge] response', id, event.data.error ? 'ERROR' : 'OK', event.data.data);
+
+    if (event.data.error) {
+      handler.reject(new Error(event.data.error));
+    } else {
+      handler.resolve(event.data.data);
+    }
+  });
+
+  window.addEventListener('error', function(event) {
+    console.error('[n.codes:bridge] JS error:', event.message, 'at', event.filename, ':', event.lineno);
+    window.parent.postMessage({
+      type: 'ncodes:sandbox-error',
+      message: event.message,
+      lineno: event.lineno,
+      colno: event.colno
+    }, '*');
+  });
+
+  window.ncodes = {
+    query: function(ref, params) {
+      return sendRequest('query', ref, params || {});
+    },
+    action: function(ref, data) {
+      return sendRequest('action', ref, data || {});
+    },
+    app: ${JSON.stringify(e||{name:"",entities:[]})}
+  };
+})();
+`}be.exports={getBridgeScript:pt}});var xe=x((sn,fe)=>{"use strict";function ut(e,t,n){let r=(n||{}).fetchFn||globalThis.fetch,s={};if(Array.isArray(t))for(let l of t)s[l.ref]={type:l.type,method:l.resolved.method,path:l.resolved.path};function i(l){if(!l.data||l.data.type!=="ncodes:api-request"){l.data&&l.data.type==="ncodes:sandbox-error"&&console.error("[n.codes:sandbox] Error in generated code:",l.data.message,"line:",l.data.lineno);return}if(e.contentWindow&&l.source!==e.contentWindow)return;let{id:p,method:m,ref:b,params:S,data:g}=l.data;!p||!b||(console.log("[n.codes:handler] request received",{id:p,method:m,ref:b}),c(p,m,b,S,g))}async function c(l,p,m,b,S){try{let g=s[m];if(!g){console.warn("[n.codes:handler] unknown ref",m,"available:",Object.keys(s)),d(l,null,"Unknown API reference: "+m);return}if(console.log("[n.codes:handler] ref resolved",{ref:m,path:g.path,method:g.method}),p==="query"&&g.type!=="query"){d(l,null,'Reference "'+m+'" is not a query');return}if(p==="action"&&g.type!=="action"){d(l,null,'Reference "'+m+'" is not an action');return}let y={credentials:"include"},w=g.path;if(g.method==="GET"){if(b&&Object.keys(b).length>0){let k=new URLSearchParams;for(let[M,C]of Object.entries(b))C!=null&&k.append(M,String(C));let E=w.includes("?")?"&":"?";w=w+E+k.toString()}y.method="GET"}else y.method=g.method,y.headers={"Content-Type":"application/json"},y.body=JSON.stringify(S||b||{});let f=await r(w,y);if(console.log("[n.codes:handler] fetch complete",{id:l,ref:m,status:f.status,ok:f.ok}),!f.ok){let k=await f.json().catch(function(){return{}}),E=k&&k.error||"Request failed ("+f.status+")";d(l,null,E);return}let L=await f.json();d(l,L,null)}catch(g){d(l,null,g.message||"Network error")}}function d(l,p,m){console.log("[n.codes:handler] response sent",{id:l,hasData:!!p,error:m||null}),e.contentWindow&&e.contentWindow.postMessage({type:"ncodes:api-response",id:l,data:p,error:m},"*")}function u(){window.addEventListener("message",i)}function h(){window.removeEventListener("message",i)}return{start:u,stop:h,handler:i}}fe.exports={createMessageHandler:ut}});var Se=x((dn,ke)=>{"use strict";var{getBridgeScript:mt}=ve(),{createMessageHandler:ht}=xe(),A=null;function gt(e,t,n){we();let o=n||{},{html:r,css:s,js:i,apiBindings:c}=t,d=document.createElement("iframe");d.setAttribute("sandbox","allow-scripts"),d.style.width="100%",d.style.height="100%",d.style.border="none",d.style.display="block",d.style.backgroundColor="transparent";let u=mt(o.appInfo),h=ye(u,r||"",s||"",i||"");d.setAttribute("srcdoc",h);let l=ht(d,c||[],{fetchFn:o.fetchFn});l.start(),e.appendChild(d);let p={iframe:d,messageHandler:l,destroy:function(){l.stop(),d.parentNode&&d.parentNode.removeChild(d),A===p&&(A=null)}};return A=p,p}function ye(e,t,n,o){return'<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #ededed; background: transparent; padding: 16px; }</style>'+(n?"<style>"+n+"</style>":"")+"<script>"+e+"<\/script></head><body>"+t+(o?"<script>"+o+"<\/script>":"")+"</body></html>"}function we(){A&&(A.destroy(),A=null)}function bt(){return A}ke.exports={createSandbox:gt,destroyActiveSandbox:we,getActiveSandbox:bt,buildSrcdoc:ye}});var Te=x((cn,Ce)=>{var{createSandbox:vt,destroyActiveSandbox:ft}=Se();function xt(e,t,n){return H(e),vt(e,t,n)}function yt(e,t){H(e);let r=new DOMParser().parseFromString(t,"text/html").body.childNodes;for(;r.length>0;)e.appendChild(r[0]);return Ee(e),e}function H(e){if(e)for(ft();e.firstChild;)e.removeChild(e.firstChild)}function Ee(e){let t=e.querySelectorAll(".action-btn.remind");t.forEach(s=>{s.addEventListener("click",function(){let i=this.textContent;this.textContent="Sent!",this.style.background="var(--ncodes-accent)",this.style.color="#000",this.disabled=!0,setTimeout(()=>{this.textContent=i,this.style.background="",this.style.color="",this.disabled=!1},2e3)})});let n=e.querySelector(".action-btn.primary");n&&n.textContent.includes("Send All")&&n.addEventListener("click",function(){let s=this.textContent;this.textContent="All reminders sent!",this.disabled=!0,t.forEach(i=>{i.textContent="Sent!",i.style.background="var(--ncodes-accent)",i.style.color="#000",i.disabled=!0}),setTimeout(()=>{this.textContent=s,this.disabled=!1,t.forEach(i=>{i.textContent="Send Reminder",i.style.background="",i.style.color="",i.disabled=!1})},2e3)});let o=e.querySelector(".action-btn.danger");o&&o.addEventListener("click",function(){this.textContent="Archived!",this.style.background="var(--ncodes-accent)",this.disabled=!0});let r=e.querySelector("[data-ncodes-select-all]");r&&r.addEventListener("change",function(){let s=e.querySelectorAll(".row-checkbox"),i=e.querySelector(".selection-count");s.forEach(c=>{c.checked=this.checked}),i&&(i.textContent=this.checked?"234 selected":"0 selected")})}Ce.exports={renderGenerated:xt,renderGeneratedUI:yt,clearRenderedUI:H,setupActionHandlers:Ee}});var qe=x((ln,Ae)=>{var P="ncodes:history";function F(){try{let e=localStorage.getItem(P);if(!e)return[];let t=JSON.parse(e);return Array.isArray(t)?t:[]}catch{return[]}}function wt({prompt:e,templateId:t,generated:n}){let o=F(),r={id:String(Date.now()),prompt:e,templateId:t||null,timestamp:Date.now()};return n&&(r.generated=n),o.unshift(r),o.length>20&&(o.length=20),localStorage.setItem(P,JSON.stringify(o)),r}function kt(e){let t=F().filter(n=>n.id!==e);return localStorage.setItem(P,JSON.stringify(t)),t}function St(){localStorage.removeItem(P)}Ae.exports={getHistory:F,addToHistory:wt,removeFromHistory:kt,clearHistory:St,STORAGE_KEY:P,MAX_ENTRIES:20}});var ze=x((pn,Pe)=>{async function Et(e,t,n={}){let{timeout:o=3e4,maxRetries:r=3,fetchFn:s}=n,i=s||globalThis.fetch,c;for(let d=0;d<=r;d++){if(d>0){let u=1e3*Math.pow(2,d-1);await Re(u)}try{return await Ct(i,e,t,o)}catch(u){if(c=u,u instanceof v&&u.status>=400&&u.status<500)throw u}}throw c}async function Ct(e,t,n,o){let r=new AbortController,s=setTimeout(()=>r.abort(),o);try{let i=await e(t,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(n),signal:r.signal});if(!i.ok){let c=await i.json().catch(()=>({})),d=Le(i.status,c);throw new v(d,i.status,c)}return i.json()}catch(i){throw i instanceof v?i:i.name==="AbortError"?new v("Request timed out. The AI is taking too long to respond.",0,null):new v("Network error. Please check your connection and try again.",0,null)}finally{clearTimeout(s)}}function Le(e,t){let n=t&&t.error;return e===401?"API key is missing or invalid. Please check your configuration.":e===400?n||"Invalid request. Please try a different prompt.":e===422?"The AI generated an invalid response. Please try again.":e===429?"Rate limit exceeded. Please wait a moment and try again.":e>=500?"Server error. The AI service may be temporarily unavailable.":n||`Unexpected error (${e}).`}var v=class extends Error{constructor(t,n,o){super(t),this.name="GenerateError",this.status=n,this.data=o}},Ie=2e3,Ne=5*60*1e3;async function Tt(e,t,n={}){let{interval:o=Ie,maxDuration:r=Ne,onProgress:s,fetchFn:i}=n,c=i||globalThis.fetch,u=`${e.replace(/\/api\/generate\/?$/,"")}/api/jobs/${t}`,h=Date.now();for(;;){if(Date.now()-h>=r)throw new v("Generation is taking longer than expected. Please try again.",0,null);let p;try{let m=await c(u);if(!m.ok){if(m.status===404)throw new v("Job not found. It may have expired.",404,null);let b=await m.json().catch(()=>({}));throw new v(b.error||`Polling error (${m.status})`,m.status,b)}p=await m.json()}catch(m){throw m instanceof v?m:new v("Network error while checking generation status.",0,null)}if(p.status==="running"){p.step&&typeof s=="function"&&s(p.step),await Re(o);continue}if(p.status==="completed"||p.status==="clarification")return p.result;throw p.status==="failed"?new v(p.error||"Generation failed. Please try again.",0,null):new v(`Unexpected job status: ${p.status}`,0,null)}}function Re(e){return new Promise(t=>setTimeout(t,e))}Pe.exports={callGenerateAPI:Et,pollJobStatus:Tt,GenerateError:v,classifyError:Le,DEFAULT_TIMEOUT:3e4,MAX_RETRIES:3,BASE_DELAY:1e3,DEFAULT_POLL_INTERVAL:Ie,DEFAULT_MAX_POLL_DURATION:Ne}});var Yt=x((mn,Ve)=>{var{mergeConfig:At}=ne(),{getStyles:qt}=ae(),{createTrigger:Lt}=se(),{createPanel:It,openPanel:Me,closePanel:G,showResultView:z,showPromptView:O,getResultContainer:N,updateHistoryList:Nt}=pe(),{findTemplate:Rt,getTemplateHTML:je,STATUS_MESSAGES:$}=ge(),{renderGenerated:Ue,renderGeneratedUI:De,clearRenderedUI:R}=Te(),{getHistory:Oe,addToHistory:_e,removeFromHistory:Pt}=qe(),{callGenerateAPI:zt,pollJobStatus:Mt,GenerateError:un}=ze(),a=null;function jt(e){a&&$e();let t=At(e);if(!t.user){a={config:t,mounted:!1};return}if(typeof CSS<"u"&&CSS.registerProperty)try{CSS.registerProperty({name:"--ncodes-glow-angle",syntax:"<angle>",initialValue:"0deg",inherits:!1})}catch{}let n=document.createElement("div");n.id="ncodes-root";let o=n.attachShadow({mode:"open"}),r=document.createElement("style"),s=t.theme==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light":t.theme;r.textContent=qt(s),o.appendChild(r);let i=Lt(t,()=>{Me(c,i)}),c=It(t);o.appendChild(i),o.appendChild(c),document.body.appendChild(n),a={config:t,host:n,shadow:o,trigger:i,panel:c,mounted:!0,isGenerating:!1},Ut(),B()}function Ut(){if(!a||!a.mounted)return;let{panel:e,trigger:t}=a,n=e.querySelector("[data-ncodes-panel-close]");n&&n.addEventListener("click",()=>G(e,t));let o=e.querySelector(".generate-btn");o&&o.addEventListener("click",_);let r=e.querySelector(".prompt-input");r&&r.addEventListener("keydown",c=>{c.key==="Enter"&&!c.shiftKey&&(c.preventDefault(),_())}),Dt();let s=e.querySelector(".history-list");s&&s.addEventListener("click",_t);let i=e.querySelector("[data-ncodes-back]");i&&i.addEventListener("click",He),document.addEventListener("keydown",Ge),document.addEventListener("click",Be)}function Dt(){if(!a||!a.mounted)return;a.panel.querySelectorAll(".quick-prompt").forEach(t=>{t.addEventListener("click",()=>{let n=a.panel.querySelector(".prompt-input");n&&(n.value=t.getAttribute("data-prompt"),n.focus())})})}function Ot(e){return Rt(e)}function Ge(e){!a||!a.mounted||e.key==="Escape"&&a.panel.classList.contains("open")&&(a.panel.classList.contains("expanded")?He():G(a.panel,a.trigger))}function Be(e){!a||!a.mounted||a.panel.classList.contains("open")&&!a.host.contains(e.target)&&G(a.panel,a.trigger)}function He(){if(!a||!a.mounted)return;let e=N(a.panel);R(e),O(a.panel)}function _t(e){if(!a||!a.mounted)return;let t=e.target.closest("[data-history-delete]");if(t){e.stopPropagation();let o=t.getAttribute("data-history-delete");Pt(o),B();return}let n=e.target.closest(".history-item");if(n){let o=n.getAttribute("data-history-id"),r=n.querySelector(".history-prompt-text"),s=r?r.textContent:"";Gt(o,s)}}function Gt(e,t){if(!a||!a.mounted)return;let o=Oe().find(s=>s.id===e),r=N(a.panel);if(R(r),o&&o.generated)Ue(r,{html:o.generated.html,css:o.generated.css,js:o.generated.js,apiBindings:o.generated.apiBindings});else{let s=o?o.templateId:"invoices",i=je(s);De(r,i)}z(a.panel,t)}async function _(){if(!a||!a.mounted||a.isGenerating)return;let e=a.panel.querySelector(".prompt-input"),t=e?e.value.trim():"";if(!t)return;a.isGenerating=!0;let n=a.panel.querySelector(".generate-btn");if(n){n.disabled=!0;let s=n.querySelector(".btn-text"),i=n.querySelector(".btn-loading");s&&(s.style.display="none"),i&&(i.style.display="flex")}let{config:o}=a;o.mode==="live"?await Ht(t,n,e):await Fe(t,n,e),a.isGenerating=!1}var Bt={intent:"Understanding your request...",codegen:"Writing HTML, CSS & JavaScript...",review:"Reviewing generated code...",iterate:"Fixing issues found by QA...",resolve:"Resolving API connections..."};async function Ht(e,t,n){$t("Generating... this usually takes 1-2 minutes");try{let{config:o}=a,{jobId:r}=await zt(o.apiUrl,{prompt:e,provider:o.provider,model:o.model}),s=await Mt(o.apiUrl,r,{onProgress(c){let d=Bt[c]||"Generating...";Vt(c,d)}});if(s.clarifyingQuestion){V(),Ft(s.clarifyingQuestion,s.options,e,t,n);return}_e({prompt:e,generated:{html:s.html,css:s.css,js:s.js,apiBindings:s.apiBindings}}),B(),V();let i=N(a.panel);R(i),Ue(i,{html:s.html,css:s.css,js:s.js,apiBindings:s.apiBindings}),z(a.panel,e),q(t,n)}catch(o){V(),console.warn("[n.codes] Live generation failed:",o.message),Jt(o.message,e,t,n)}}function Ft(e,t,n,o,r){if(!a||!a.mounted)return;let s=N(a.panel);R(s);let i=document.createElement("div");i.className="ncodes-clarifying-question";let c=document.createElement("div");if(c.className="ncodes-clarifying-text",c.textContent=e,i.appendChild(c),Array.isArray(t)&&t.length>0){let d=document.createElement("div");d.className="ncodes-clarifying-options",t.forEach(u=>{let h=document.createElement("button");h.className="ncodes-clarifying-option",h.textContent=u,h.addEventListener("click",()=>{let l=n+" \u2014 "+u;r&&(r.value=l),O(a.panel),q(o,r),a.isGenerating=!1,_()}),d.appendChild(h)}),i.appendChild(d)}s.appendChild(i),z(a.panel,n),q(o,r)}async function Fe(e,t,n){await Qt();let o=Ot(e),r=je(o);_e({prompt:e,templateId:o}),B();let s=N(a.panel);R(s),De(s,r),z(a.panel,e),q(t,n)}function q(e,t){if(e){e.disabled=!1;let o=e.querySelector(".btn-text"),r=e.querySelector(".btn-loading");o&&(o.style.display="inline"),r&&(r.style.display="none")}let n=a.panel.querySelector(".generation-status");n&&(n.style.display="none"),t&&(t.value="")}function $t(e){if(!a||!a.mounted)return;let t=a.panel.querySelector(".generation-status"),n=a.panel.querySelector(".status-text"),o=a.panel.querySelector(".status-icon"),r=a.panel.querySelector(".status-step");t&&(t.style.display="block"),n&&(n.textContent=e||"Generating with AI..."),o&&o.classList.add("spinning"),r&&(r.textContent="")}function Vt(e,t){if(!a||!a.mounted)return;let n=a.panel.querySelector(".status-text"),o=a.panel.querySelector(".status-step");n&&(n.textContent=t),o&&(o.textContent=e)}function V(){if(!a||!a.mounted)return;let e=a.panel.querySelector(".generation-status");e&&(e.style.display="none")}function Jt(e,t,n,o){if(!a||!a.mounted)return;let r=N(a.panel);R(r);let s=document.createElement("div");s.className="ncodes-error-state";let i=document.createElement("div");i.className="ncodes-error-icon",i.textContent="\u26A0";let c=document.createElement("div");c.className="ncodes-error-message",c.textContent=e;let d=document.createElement("div");d.className="ncodes-error-actions";let u=document.createElement("button");u.className="ncodes-error-retry",u.textContent="Try again",u.addEventListener("click",()=>{o&&(o.value=t),O(a.panel),q(n,o),a.isGenerating=!1,_()});let h=document.createElement("button");h.className="ncodes-error-fallback",h.textContent="Use demo mode",h.addEventListener("click",async()=>{O(a.panel),q(n,o),a.isGenerating=!1,o&&(o.value=t),a.isGenerating=!0,await Fe(t,n,o),a.isGenerating=!1}),d.appendChild(u),d.appendChild(h),s.appendChild(i),s.appendChild(c),s.appendChild(d),r.appendChild(s),z(a.panel,t),q(n,o)}async function Qt(){if(!a||!a.mounted)return;let e=a.panel.querySelector(".generation-status"),t=a.panel.querySelector(".status-text");if(!(!e||!t)){e.style.display="block";for(let n=0;n<$.length;n++){t.textContent=$[n];let o=n===$.length-1?300:400+Math.random()*300;await Kt(o)}}}function B(){if(!a||!a.mounted)return;let e=Oe();Nt(a.panel,e)}function Xt(){!a||!a.mounted||Me(a.panel,a.trigger)}function Wt(){!a||!a.mounted||G(a.panel,a.trigger)}function $e(){a&&(document.removeEventListener("keydown",Ge),document.removeEventListener("click",Be),a.host&&a.host.parentNode&&a.host.parentNode.removeChild(a.host),a=null)}function Kt(e){return new Promise(t=>setTimeout(t,e))}Ve.exports={init:jt,open:Xt,close:Wt,destroy:$e}});return Yt();})();
 if(typeof module!=="undefined")module.exports=NCodes;
 //# sourceMappingURL=ncodes-widget.js.map
