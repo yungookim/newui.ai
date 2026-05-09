@@ -13,9 +13,9 @@
     "simulate:user": "node scripts/simulate-user.js"
   },
   "dependencies": {
-    "ai": "^3.0.0",
-    "@ai-sdk/openai": "^0.0.40",
-    "@ai-sdk/anthropic": "^0.0.30"
+    "ai": "^5.0.52",
+    "@ai-sdk/openai": "^3.0.63",
+    "@ai-sdk/anthropic": "^3.0.76"
   },
   "devDependencies": {
     "c8": "^9.1.0"
