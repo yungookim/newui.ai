@@ -10,6 +10,6 @@
   "dependencies": {
     "@ncodes/widget": "file:../../widget",
     "ejs": "^3.1.10",
-    "express": "^4.21.0"
+    "express": "^4.22.2"
   }
 }
